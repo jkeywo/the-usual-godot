@@ -3,6 +3,7 @@ import functools
 import http.server
 import json
 import threading
+import shutil
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -11,7 +12,7 @@ server = http.server.ThreadingHTTPServer(("127.0.0.1", 8765), handler)
 threading.Thread(target=server.serve_forever, daemon=True).start()
 try:
     with sync_playwright() as p:
-        browser = p.chromium.launch(args=["--enable-webgl", "--use-gl=angle", "--use-angle=swiftshader"])
+        browser = p.chromium.launch(executable_path=shutil.which("google-chrome"), args=["--enable-webgl", "--use-gl=angle", "--use-angle=swiftshader"])
         page = browser.new_page(viewport={"width": 1280, "height": 800})
         errors = []
         page.on("pageerror", lambda error: errors.append(str(error)))

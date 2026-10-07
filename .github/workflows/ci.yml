@@ -36,7 +36,8 @@ jobs:
       - run: uv run python tools/run_checked.py "${{ steps.godot.outputs.godot }}" --headless --path . --export-release Windows
       - run: uv run python tools/run_checked.py "${{ steps.godot.outputs.godot }}" --headless --path . --export-release Web
       - run: uv run python tools/prepare_web.py
-      - run: uv run playwright install --with-deps chromium
+      - run: command -v google-chrome || uv run playwright install chromium
+        timeout-minutes: 5
       - run: uv run python tools/browser_acceptance.py
       - uses: actions/upload-artifact@v4
         with:
