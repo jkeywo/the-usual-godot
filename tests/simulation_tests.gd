@@ -714,10 +714,9 @@ func test_saves() -> void:
 			restored = VillageSave.decode(VillageSave.encode(sim), content)
 			var valid: bool = restored != null
 			if valid:
-				var uninterrupted := VillageSave.decode(VillageSave.encode(sim), content)
 				advance(restored, 30)
-				advance(uninterrupted, 30)
-				valid = restored.state == uninterrupted.state
+				advance(sim, 30)
+				valid = restored.state == sim.state
 			check("save_" + scenario + "_" + str(checkpoint), valid)
 			sim.advance_tick()
 
@@ -763,7 +762,7 @@ func test_reference() -> void:
 						matches
 						and sim.state.residents[need[0]].needs[need[1]][field] == need[2][field]
 					)
-			check("rust_snapshot_" + str(tick), matches)
+			check("rust_snapshot_" + str(tick), matches and reference_state_matches(sim, reference))
 		sim.advance_tick()
 	sim = fresh()
 	advance(sim, 240)
@@ -858,3 +857,71 @@ func integer_values(value: Variant) -> Variant:
 			result[key] = integer_values(value[key])
 		return result
 	return value
+
+
+func reference_state_matches(sim: VillageSimulation, reference: Dictionary) -> bool:
+	var state: Dictionary = sim.state
+	var matches: bool = (
+		state.next_id == reference.next_sim_id and state.start == reference.start_minute_of_day
+	)
+	for pair: Array in [
+		["calling", "calling_neighbours"],
+		["fired", "fired_invitations"],
+		["knowledge", "household_knowledge"],
+		["read_notices", "read_notices"],
+		["started", "started_coordinators"]
+	]:
+		matches = matches and state[pair[0]] == reference[pair[1]]
+	for pair: Array in [
+		["carrying", "carrying"],
+		["quality", "cooking_quality"],
+		["tasks", "player_tasks"],
+		["queues", "player_task_queue"]
+	]:
+		var expected: Variant = reference[pair[1]]
+		if expected is Array and expected.is_empty():
+			expected = {}
+		matches = matches and JSON.stringify(state[pair[0]]) == JSON.stringify(expected)
+	for stock: Array in reference.stocks:
+		for item: Array in stock[1]:
+			matches = matches and state.stocks[stock[0]][item[0]] == item[1]
+	matches = matches and state.slots.size() == reference.object_slot_claims.size()
+	for claim: Array in reference.object_slot_claims:
+		matches = matches and state.slots.get(claim[0] + "/" + claim[1]) == claim[2]
+	matches = matches and state.capabilities.size() == reference.capability_claims.size()
+	for claim: Array in reference.capability_claims:
+		matches = matches and state.capabilities.get(str(claim[0]) + "/" + claim[1]) == claim[2]
+	matches = matches and state.plans.size() == reference.active_plans.size()
+	for who: Variant in reference.active_plans:
+		var expected: Dictionary = reference.active_plans[who]
+		var actual: Dictionary = state.plans.get(int(who), {})
+		matches = matches and actual.get("intention") == expected.intention
+		matches = matches and actual.get("priority") == expected.priority
+		matches = matches and actual.frames.size() == expected.frames.size()
+		for i: int in expected.frames.size():
+			matches = matches and actual.frames[i].plan == expected.frames[i].plan
+			matches = matches and actual.frames[i].step == expected.frames[i].step
+			matches = (
+				matches and actual.frames[i].flight == (expected.frames[i].state == "InFlight")
+			)
+	matches = matches and state.walks.size() == reference.go_to.size()
+	for who: Variant in reference.go_to:
+		var expected: Dictionary = reference.go_to[who]
+		var actual: Dictionary = state.walks.get(int(who), {})
+		for key: String in ["destination", "path", "priority", "approach"]:
+			matches = matches and actual.get(key) == expected[key]
+		matches = matches and actual.get("next") == expected.next_step
+		matches = matches and actual.get("age") == expected.request_age
+	matches = matches and state.uses.size() == reference.active_object_uses.size()
+	for who: Variant in reference.active_object_uses:
+		var expected: Dictionary = reference.active_object_uses[who]
+		var actual: Dictionary = state.uses.get(int(who), {})
+		for key: String in ["object", "affordance", "slot", "capability"]:
+			matches = matches and actual.get(key) == expected[key]
+		matches = matches and actual.get("remaining") == expected.ticks_remaining
+	for pair: Array in [["pending", "pending_events"], ["ingested", "ingested_events"]]:
+		var expected: Array = []
+		for event: Dictionary in reference[pair[1]]:
+			expected.append({"tick": event.tick, "kind": event.kind.kind, "data": event.kind.value})
+		matches = matches and state[pair[0]] == expected
+	return matches

@@ -9,8 +9,17 @@ a household dashboard, fresh saves, and replacement of restricted artwork.
 Historical PASM decisions remain preserved; migration decisions supersede
 technology-specific choices for this repository only.
 
-Acceptance is full implemented behavior parity. The migration remains in
-progress until all source behavior tests and platform smoke checks pass.
+The acceptance suite maps all 84 baseline simulation behavior tests, compares
+three independent Rust event traces and eight authoritative state checkpoints,
+and checks unsigned mixer vectors. The state comparisons include positions,
+needs, navigation paths, plans, active uses, stocks, claims and pending events.
+There are 205 simulation checks and 16 client checks, including 75 save/resume
+checkpoints for movement, contention, cooking, urgent preemption and initiatives.
+
+The same suite runs headlessly and in the browser export. CI verifies browser
+persistence after reload, captures wide and narrow screenshots, and runs the
+exported executable on Windows before deploying GitHub Pages. Every release is
+built with the pinned editor and matching SHA512-verified templates.
 
 ## Godot architecture checks
 

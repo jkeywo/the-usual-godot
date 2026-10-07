@@ -52,6 +52,18 @@ static func run(game: Control) -> Dictionary:
 	checks.platform_save_read = restored != null and restored.state == game.simulation.state
 	checks.task_ids_survive_restore = restored != null and restored.next_player_task_id() > 1
 	checks.audio_asset_loaded = game.sound.stream != null
+	var original_size: Vector2 = game.size
+	game.size = Vector2(430, 900)
+	game.responsive_layout()
+	game.details.visible = false
+	game.toggle_details()
+	checks.narrow_details_replace_viewport = (
+		game.details.visible and not game.viewport_panel.visible
+	)
+	game.toggle_details()
+	checks.narrow_drawer_closes = not game.details.visible and game.viewport_panel.visible
+	game.size = original_size
+	game.responsive_layout()
 	var failed: Array[String] = []
 	for name: String in checks:
 		if not checks[name]:
