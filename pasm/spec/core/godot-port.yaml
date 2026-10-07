@@ -37,3 +37,12 @@ entities:
       summary: "Capture fixtures from the frozen Rust baseline; supplement pinned PASM with a local Godot mapping and dependency-boundary gate. Keep phase methods together for direct parity review."
       rationale: ["[ai] The pinned scanner does not index GDScript. Explicit path and boundary checks close that gap without modifying the shared dependency."]
       references: [godot-native-port, scenario-test-harness, godot-deterministic-data-core]
+
+  - decision: godot-floating-hud
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Full-window simulation with floating household HUD
+      summary: "User-authorized replacement of the boxed dashboard layout: the simulation occupies the full window, with toolbar, resident details, household portraits and village feed floating above it. Supersedes the spatial layout of godot-household-dashboard while preserving its controls."
+      rationale: ["[ai] Only visible HUD panels intercept pointer input; opening drawers never resizes or hides the simulation viewport."]
+      references: [godot-household-dashboard, village-client]

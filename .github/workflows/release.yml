@@ -6,6 +6,10 @@ on:
         description: Successful Godot CI run containing the Windows artifact
         required: true
         type: string
+      tag:
+        description: Existing draft release tag for this verified build
+        required: true
+        type: string
 permissions:
   contents: write
   actions: read
@@ -27,6 +31,7 @@ jobs:
       - name: Publish Windows download
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
         run: |
-          gh release upload v0.1.0-godot release/TheUsual-Windows-x64.zip release/SHA256SUMS.txt --clobber
-          gh release edit v0.1.0-godot --draft=false
+          gh release upload "$RELEASE_TAG" release/TheUsual-Windows-x64.zip release/SHA256SUMS.txt --clobber
+          gh release edit "$RELEASE_TAG" --draft=false

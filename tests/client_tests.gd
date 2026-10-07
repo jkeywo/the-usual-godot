@@ -57,9 +57,12 @@ static func run(game: Control) -> Dictionary:
 	game.responsive_layout()
 	game.details.visible = false
 	game.toggle_details()
-	checks.narrow_details_replace_viewport = (
-		game.details.visible and not game.viewport_panel.visible
+	checks.narrow_details_overlay_viewport = game.details.visible and game.viewport_panel.visible
+	checks.simulation_anchors_fill_window = (
+		game.view.anchor_right == 1.0 and game.view.anchor_bottom == 1.0
 	)
+	checks.hud_blocks_pointer = game.details.mouse_filter == Control.MOUSE_FILTER_STOP
+	checks.hud_does_not_change_simulation = state_before == game.simulation.state
 	game.toggle_details()
 	checks.narrow_drawer_closes = not game.details.visible and game.viewport_panel.visible
 	game.size = original_size

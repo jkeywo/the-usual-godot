@@ -22,7 +22,9 @@ var needs_box: VBoxContainer
 var orders_box: VBoxContainer
 var memories_box: VBoxContainer
 var feed: RichTextLabel
-var viewport_panel: PanelContainer
+var viewport_panel: Control
+var top_hud: PanelContainer
+var bottom_hud: PanelContainer
 var details: PanelContainer
 var feed_panel: PanelContainer
 var place_picker: OptionButton
@@ -107,7 +109,7 @@ func run_acceptance_tests() -> void:
 func panel() -> PanelContainer:
 	var p := PanelContainer.new()
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color("263f3c")
+	style.bg_color = Color(0.10, 0.19, 0.18, 0.94)
 	style.border_color = Color("526158")
 	style.set_border_width_all(1)
 	style.set_corner_radius_all(8)
@@ -163,25 +165,30 @@ func build_ui() -> void:
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(background)
-	var margin := MarginContainer.new()
-	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	for side: String in ["left", "right", "top", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, 18)
-	add_child(margin)
+	viewport_panel = Control.new()
+	viewport_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	viewport_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(viewport_panel)
+	view = VillageView.new()
+	view.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	viewport_panel.add_child(view)
+	view.resident_selected.connect(select_resident)
+	view.target_requested.connect(open_menu)
+	view.move_requested.connect(queue_move)
+	view.hovered.connect(func(text: String) -> void: hover_label.text = text)
+	top_hud = panel()
+	add_child(top_hud)
 	var layout := VBoxContainer.new()
-	layout.add_theme_constant_override("separation", 12)
-	margin.add_child(layout)
+	layout.add_theme_constant_override("separation", 8)
+	top_hud.add_child(layout)
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 16)
 	layout.add_child(header)
 	var title_box := VBoxContainer.new()
 	title_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	header.add_child(title_box)
-	title_box.add_child(label(tr_text("title"), 36, Color("e4c48c")))
-	var subtitle := label(tr_text("subtitle"), 16, Color("aeb7a3"))
-	subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	title_box.add_child(subtitle)
-	clock_label = label("", 28)
+	title_box.add_child(label(tr_text("title"), 24, Color("e4c48c")))
+	clock_label = label("", 24)
 	header.add_child(clock_label)
 	var toolbar := HFlowContainer.new()
 	toolbar.add_theme_constant_override("h_separation", 8)
@@ -216,40 +223,11 @@ func build_ui() -> void:
 		button(tr_text("feed_toggle"), func() -> void: feed_panel.visible = not feed_panel.visible)
 	)
 	toolbar.add_child(button(tr_text("audio"), func() -> void: muted = not muted))
-	var body := HBoxContainer.new()
-	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	body.add_theme_constant_override("separation", 12)
-	layout.add_child(body)
-	viewport_panel = panel()
-	viewport_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	body.add_child(viewport_panel)
-	var world_column := VBoxContainer.new()
-	viewport_panel.add_child(world_column)
-	var caption := HBoxContainer.new()
-	world_column.add_child(caption)
-	var day := label(tr_text("day"), 16, Color("e0c391"))
-	day.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	caption.add_child(day)
-	hover_label = label("", 16, Color("b8c0ab"))
-	caption.add_child(hover_label)
-	view = VillageView.new()
-	view.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	view.custom_minimum_size = Vector2(180, 240)
-	world_column.add_child(view)
-	view.resident_selected.connect(select_resident)
-	view.target_requested.connect(open_menu)
-	view.move_requested.connect(queue_move)
-	view.hovered.connect(func(text: String) -> void: hover_label.text = text)
-	var help := label(
-		tr_text("touch_help") if DisplayServer.is_touchscreen_available() else tr_text("help"),
-		14,
-		Color("9caa98")
-	)
-	help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	world_column.add_child(help)
+	hover_label = label(tr_text("day"), 14, Color("b8c0ab"))
+	hover_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	layout.add_child(hover_label)
 	details = panel()
-	details.custom_minimum_size.x = 300
-	body.add_child(details)
+	add_child(details)
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	details.add_child(scroll)
@@ -272,10 +250,10 @@ func build_ui() -> void:
 	detail_column.add_child(label(tr_text("memories"), 15, Color("baac86")))
 	memories_box = VBoxContainer.new()
 	detail_column.add_child(memories_box)
-	var bottom := panel()
-	layout.add_child(bottom)
+	bottom_hud = panel()
+	add_child(bottom_hud)
 	var bottom_column := VBoxContainer.new()
-	bottom.add_child(bottom_column)
+	bottom_hud.add_child(bottom_column)
 	bottom_column.add_child(label(tr_text("household"), 14, Color("baac86")))
 	household = HBoxContainer.new()
 	household.add_theme_constant_override("separation", 12)
@@ -296,7 +274,7 @@ func build_ui() -> void:
 	bottom_column.add_child(receipt)
 	feed_panel = panel()
 	feed_panel.visible = false
-	layout.add_child(feed_panel)
+	add_child(feed_panel)
 	var feed_column := VBoxContainer.new()
 	feed_panel.add_child(feed_column)
 	feed_column.add_child(label(tr_text("village"), 14, Color("baac86")))
@@ -311,18 +289,32 @@ func build_ui() -> void:
 	sound.stream = load("res://assets/click-a.ogg")
 	sound.volume_db = -15
 	add_child(sound)
+	top_hud.resized.connect(responsive_layout)
+	bottom_hud.resized.connect(responsive_layout)
 
 
 func responsive_layout() -> void:
+	if top_hud == null or bottom_hud == null:
+		return
 	var is_narrow: bool = size.x < 900
 	if narrow != is_narrow:
 		narrow = is_narrow
 		details.visible = not narrow
-		feed_panel.visible = not narrow
-	details_button.visible = narrow
-	details.custom_minimum_size.x = 300
-	details.size_flags_horizontal = Control.SIZE_EXPAND_FILL if narrow else Control.SIZE_FILL
-	viewport_panel.visible = not (narrow and details.visible)
+		feed_panel.visible = false
+	details_button.visible = true
+	var inset: float = 12.0
+	var usable: float = maxf(300.0, size.x - inset * 2)
+	top_hud.position = Vector2(inset, inset)
+	top_hud.size = Vector2(usable, top_hud.get_combined_minimum_size().y)
+	bottom_hud.size = Vector2(minf(640, usable), bottom_hud.get_combined_minimum_size().y)
+	bottom_hud.position = Vector2(inset, size.y - bottom_hud.size.y - inset)
+	var upper: float = top_hud.position.y + top_hud.size.y + inset
+	var lower: float = bottom_hud.position.y - inset
+	details.position = Vector2(inset if narrow else size.x - 312, upper)
+	details.size = Vector2(usable if narrow else 300.0, maxf(120, lower - upper))
+	feed_panel.size = Vector2(minf(400, usable), 130)
+	feed_panel.position = Vector2(inset, maxf(upper, lower - feed_panel.size.y))
+	viewport_panel.visible = true
 
 
 func toggle_details() -> void:
