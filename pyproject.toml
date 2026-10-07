@@ -1,0 +1,28 @@
+[project]
+name = "the-usual-tooling"
+version = "0.1.0"
+description = "Development tooling and PASM architecture model for The Usual."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  # PASM lives in the fleet's shared repository (a subdirectory of vellum),
+  # pinned to a rev. Bumping the rev is part of a vellum bump PR — see
+  # vellum's docs/handbook/bump-workflow.md.
+  "pasm @ git+https://github.com/jkeywo/vellum@08b5fdb7608fa732de44885aac8c7af9791e2052#subdirectory=pasm",
+]
+
+[tool.uv]
+package = false
+
+# Local override against a sibling vellum checkout — uncomment for local
+# work, re-comment before committing. The committed state always resolves
+# the pinned rev.
+# [tool.uv.sources]
+# pasm = { path = "../vellum/pasm", editable = true }
+
+[dependency-groups]
+dev = [
+    "gdtoolkit==4.5.0",
+    "playwright>=1.63.0",
+    "pytest>=8.0",
+]

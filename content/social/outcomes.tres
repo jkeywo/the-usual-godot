@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="VillageAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://sim/village_asset.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+domain = "social"
+data = {"took_pargeter_seat": {"salience": 90, "salience_decay_per_tick": 1, "moment_ticks": 15, "relationship": [{"dimension": "Comfort", "delta": -8}, {"dimension": "Familiarity", "delta": 3}]}, "witnessed_pargeter_seat": {"salience": 70, "salience_decay_per_tick": 1, "moment_ticks": 10, "relationship": [{"dimension": "Respect", "delta": -6}, {"dimension": "Grievance", "delta": 4}, {"dimension": "Familiarity", "delta": 5}]}, "disapproval": {"confidence_per_evidence": 25, "confidence_decay_per_tick": 1, "enter_at": 60, "exit_at": 35}}

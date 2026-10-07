@@ -1,0 +1,39 @@
+entities:
+  - decision: godot-native-port
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Native Godot port
+      summary: "User-authorized replacement of Rust and Bevy with Godot 4.7.2 and GDScript, targeting Windows and browser. Supersedes rust-and-bevy-baseline and headless-simulation-boundary in this repository while preserving deterministic behavior."
+      references: [rust-and-bevy-baseline, headless-simulation-boundary, village-simulation, village-client]
+  - decision: godot-content-and-persistence
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Godot resources and fresh saves
+      summary: "User-authorized conversion of RON content to Godot text resources and replacement of Rust saves by a new versioned format. Existing saves need not import. Historical data-first-content-pipeline and snapshots-and-event-ledger remain behavioral guidance."
+      references: [data-first-content-pipeline, snapshots-and-event-ledger, simulation-persistence]
+  - decision: godot-household-dashboard
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Household dashboard and redistributable artwork
+      summary: "User-authorized household dashboard with central village view, household portraits, selected resident needs and orders, and village feed. Replace restricted source artwork with original artwork."
+      references: [village-client, pixel-art-presentation]
+  - decision: godot-deterministic-data-core
+    core:
+      status: accepted
+      confidence: confirmed
+      title: RefCounted simulation and detached projections
+      summary: "Use RefCounted simulation classes, sorted authoritative iteration, explicit unsigned arithmetic, detached snapshots and typed command objects."
+      rationale: ["[ai] A scene-independent data core preserves headless testing and prevents presentation timing from changing the simulation."]
+      references: [godot-native-port, deterministic-tick-and-phase-order, authoritative-client-projection]
+
+  - decision: godot-parity-and-model-gates
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Independent reference traces and Godot boundary checks
+      summary: "Capture fixtures from the frozen Rust baseline; supplement pinned PASM with a local Godot mapping and dependency-boundary gate. Keep phase methods together for direct parity review."
+      rationale: ["[ai] The pinned scanner does not index GDScript. Explicit path and boundary checks close that gap without modifying the shared dependency."]
+      references: [godot-native-port, scenario-test-harness, godot-deterministic-data-core]

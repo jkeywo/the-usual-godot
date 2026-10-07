@@ -1,0 +1,324 @@
+{
+  "content_digest": 1417284402282153807,
+  "seed": 4243,
+  "tick": 1,
+  "start_minute_of_day": 960,
+  "next_sim_id": 5,
+  "residents": [
+    {
+      "id": 1,
+      "definition_id": "person.newcomer_a",
+      "position": {
+        "place": 0,
+        "x": 1,
+        "y": 1
+      }
+    },
+    {
+      "id": 2,
+      "definition_id": "person.newcomer_b",
+      "position": {
+        "place": 0,
+        "x": 2,
+        "y": 2
+      }
+    },
+    {
+      "id": 3,
+      "definition_id": "person.neighbour",
+      "position": {
+        "place": 3,
+        "x": 12,
+        "y": 2
+      }
+    },
+    {
+      "id": 4,
+      "definition_id": "person.landlord",
+      "position": {
+        "place": 2,
+        "x": 9,
+        "y": 8
+      }
+    }
+  ],
+  "fired_invitations": [],
+  "calling_neighbours": [],
+  "commitments": [],
+  "outsiders": [
+    3,
+    4
+  ],
+  "person_interactables": {
+    "3": "person.neighbour",
+    "4": "person.landlord"
+  },
+  "moments": [],
+  "traits": {
+    "1": [
+      "ThinSkinned"
+    ],
+    "2": [
+      "Forgiving"
+    ]
+  },
+  "memories": [],
+  "relationships": [],
+  "beliefs": [],
+  "household_knowledge": [],
+  "occupancy": [
+    [
+      {
+        "place": 0,
+        "x": 1,
+        "y": 1
+      },
+      1
+    ],
+    [
+      {
+        "place": 0,
+        "x": 2,
+        "y": 2
+      },
+      2
+    ],
+    [
+      {
+        "place": 2,
+        "x": 9,
+        "y": 8
+      },
+      4
+    ],
+    [
+      {
+        "place": 3,
+        "x": 12,
+        "y": 2
+      },
+      3
+    ]
+  ],
+  "portal_occupancy": [],
+  "go_to": [],
+  "use_requests": [],
+  "active_object_uses": [],
+  "needs": [
+    [
+      1,
+      "Hunger",
+      {
+        "value": 31,
+        "decay_per_tick": 1,
+        "activate_at": 60,
+        "retain_above": 25,
+        "recovery": 90,
+        "urgent_at": 255
+      }
+    ],
+    [
+      1,
+      "Energy",
+      {
+        "value": 21,
+        "decay_per_tick": 1,
+        "activate_at": 70,
+        "retain_above": 30,
+        "recovery": 100,
+        "urgent_at": 255
+      }
+    ],
+    [
+      1,
+      "Toilet",
+      {
+        "value": 11,
+        "decay_per_tick": 1,
+        "activate_at": 50,
+        "retain_above": 20,
+        "recovery": 100,
+        "urgent_at": 80
+      }
+    ],
+    [
+      1,
+      "Hygiene",
+      {
+        "value": 26,
+        "decay_per_tick": 1,
+        "activate_at": 65,
+        "retain_above": 25,
+        "recovery": 80,
+        "urgent_at": 255
+      }
+    ],
+    [
+      1,
+      "Warmth",
+      {
+        "value": 21,
+        "decay_per_tick": 1,
+        "activate_at": 60,
+        "retain_above": 20,
+        "recovery": 85,
+        "urgent_at": 255
+      }
+    ],
+    [
+      1,
+      "Comfort",
+      {
+        "value": 16,
+        "decay_per_tick": 1,
+        "activate_at": 55,
+        "retain_above": 20,
+        "recovery": 70,
+        "urgent_at": 255
+      }
+    ],
+    [
+      2,
+      "Hunger",
+      {
+        "value": 46,
+        "decay_per_tick": 1,
+        "activate_at": 60,
+        "retain_above": 25,
+        "recovery": 90,
+        "urgent_at": 255
+      }
+    ],
+    [
+      2,
+      "Energy",
+      {
+        "value": 16,
+        "decay_per_tick": 1,
+        "activate_at": 70,
+        "retain_above": 30,
+        "recovery": 100,
+        "urgent_at": 255
+      }
+    ],
+    [
+      2,
+      "Toilet",
+      {
+        "value": 0,
+        "decay_per_tick": 0,
+        "activate_at": 50,
+        "retain_above": 20,
+        "recovery": 100,
+        "urgent_at": 80
+      }
+    ],
+    [
+      2,
+      "Hygiene",
+      {
+        "value": 36,
+        "decay_per_tick": 1,
+        "activate_at": 65,
+        "retain_above": 25,
+        "recovery": 80,
+        "urgent_at": 255
+      }
+    ],
+    [
+      2,
+      "Warmth",
+      {
+        "value": 31,
+        "decay_per_tick": 1,
+        "activate_at": 60,
+        "retain_above": 20,
+        "recovery": 85,
+        "urgent_at": 255
+      }
+    ],
+    [
+      2,
+      "Comfort",
+      {
+        "value": 21,
+        "decay_per_tick": 1,
+        "activate_at": 55,
+        "retain_above": 20,
+        "recovery": 70,
+        "urgent_at": 255
+      }
+    ]
+  ],
+  "active_plans": [],
+  "stocks": [
+    [
+      "object.cottage_larder",
+      [
+        [
+          "item.bread",
+          4
+        ],
+        [
+          "item.cheese",
+          1
+        ],
+        [
+          "item.milk",
+          3
+        ],
+        [
+          "item.pasta",
+          2
+        ],
+        [
+          "item.sauce",
+          2
+        ],
+        [
+          "item.teabag",
+          8
+        ]
+      ]
+    ]
+  ],
+  "carrying": [],
+  "cooking_quality": [],
+  "initiatives": {
+    "initiative.pub_hours": {
+      "stage": "stage.gathering_support",
+      "spoken": []
+    }
+  },
+  "read_notices": [],
+  "started_coordinators": [],
+  "role_assignments": [],
+  "urgent_intentions": [],
+  "player_tasks": [],
+  "player_task_queue": [],
+  "object_slot_claims": [],
+  "capability_claims": [],
+  "pending_events": [
+    {
+      "tick": 1,
+      "kind": {
+        "kind": "TickCompleted",
+        "value": {
+          "keyed_marker": "3210927224443541717"
+        }
+      }
+    }
+  ],
+  "ingested_events": [],
+  "event_ledger": [
+    {
+      "tick": 1,
+      "kind": {
+        "kind": "TickCompleted",
+        "value": {
+          "keyed_marker": "3210927224443541717"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,326 @@
+entities:
+  - system: the-usual-runtime
+    core:
+      status: implemented
+      confidence: confirmed
+      title: The Usual Runtime
+      summary: Deterministic village-life simulation in which autonomous agents and player orders share one planning and execution path.
+      references: [village-simulation, village-client, cottage-arrival-scenario]
+
+    implementation:
+      status: declared
+      paths: [sim, client, content]
+  - component: village-simulation
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Headless Village Simulation
+      summary: Authoritative fixed-tick RefCounted world containing residents, places, needs, plans, objects, events, and persistence without presentation dependencies.
+      references: [tick-driver, world-events, agent-autonomy, simulation-persistence]
+    implementation:
+      status: declared
+      paths: [sim]
+
+  - component: village-client
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Godot Village Client
+      summary: Windows and browser Godot presentation layer that mirrors read-only simulation snapshots and submits typed player commands.
+      references: [player-command-boundary, pixel-art-presentation]
+    implementation:
+      status: declared
+      paths: [client]
+
+  - component: tick-driver
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Fixed Tick Driver
+      summary: Minimal deterministic 250 ms runner ingests the preceding tick's events and publishes an immutable tick-completed event for the following tick. The remaining simulation phases are planned work.
+      references: [world-events]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd]
+
+  - component: world-events
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Deferred Tick Event
+      summary: The runner publishes one immutable TickCompleted event at tick end; the following tick ingests it. Resolved action outcome events are planned work.
+      references: [social-consequences, simulation-persistence]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd]
+
+  - component: world-time
+    core:
+      status: implemented
+      confidence: confirmed
+      title: In-World Day Clock
+      summary: The simulation derives a deterministic wall-clock time of day from the tick and the scenario's authored starting time, at one in-world minute per tick wrapping over a day. It is exposed in the read-only Cottage snapshot and shown as a client HUD readout, and grounds the time-bound events of later milestones.
+      references: [tick-driver, in-world-day-clock, village-client]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, client/main.gd]
+
+  - component: item-stacks
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Supplies in Cupboards
+      summary: "Generic supplies exist as typed stacks held in a container fixture — bread in the larder, a jar of sauce on the shelf — and a person carries at most one thing at a time. This is the reduced half of the item model: enough for a recipe to have ingredients that can run out, and no more. Individually significant items as world entities, and anything that would need a stack to have a history, remain later work under the physical item model."
+      references: [smart-objects, physical-item-model, recipes]
+    implementation:
+      status: declared
+      paths: [sim/content.gd, sim/simulation.gd, content/items/cottage.tres]
+
+  - component: recipes
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Cooking From What Is In
+      summary: "A recipe is an authored asset naming its ingredients, the tool it needs, how long it takes, and what it yields. Preparing one consumes its ingredients from a reachable container and leaves the cook carrying the result, which is then eaten. Optional ingredients change the quality of the output rather than whether it can be made at all, which is how the same pasta is a better or worse supper depending on whether there was cheese. A conduct offers several ways to feed yourself and the stack passes over the ones whose ingredients are missing, so somebody makes toast because there is bread rather than because a plan said so."
+      references: [item-stacks, plan-library, conduct-resolution, bodily-needs]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, sim/content.gd, content/recipes/cottage.tres]
+
+  - component: bodily-needs
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Six Things a Body Wants
+      summary: "Hunger, energy, toilet, hygiene, warmth and comfort are bounded scalars, each with its own authored decay, its own activation and retention thresholds, and its own recovery. A need is answered by an authored affordance that names the need it serves, so making the bed restful is a content change rather than a code one. Only one need drives a resident at a time: the most pressing activated one wins, and it holds its resident through the same hysteresis the toilet already used, so nobody oscillates between two nearly equal urges. That selection rule is deliberately the smallest thing that works — genuine utility curves weighed against everything else an agent wants belong to agent-autonomy."
+      references: [agent-autonomy, smart-objects, initial-needs-and-recipes]
+    implementation:
+      status: declared
+      paths: [sim/content.gd, sim/simulation.gd, content/people/newcomers.tres, content/conducts/human.tres]
+
+  - component: agent-autonomy
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Autonomous Intentions and Plans
+      summary: "Agents score every intention they can hold — bodily needs and accepted commitments alike — against one another each tick through authored integer curves, with a bonus for whatever they already started so a near tie does not pull them off it. The winner's conduct slot is resolved and its plan executed as a stack of frames, so a step can expand into another plan or ask the conduct stack again. Player orders own a resident until their queue drains; an urgent need preempts and pauses the queue head instead. Preconditions, alternative decompositions and replanning on failure remain later work."
+      references: [plan-library, conduct-resolution, player-command-boundary]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, sim/content.gd, content/intentions/cottage.tres]
+
+  - component: plan-library
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Namespaced Plan Library
+      summary: "Plans are authored RON step lists. A step uses a fixture, walks somewhere, expands into another plan, or names a semantic conduct slot answered when the step runs. Expansion is bounded, because a plan that decomposes into itself is a content mistake and an unbounded one would hang a tick rather than report it. Registered predicates and scorers remain later work."
+      references: [content-registry, conduct-resolution]
+    implementation:
+      status: declared
+      paths: [sim/content.gd, sim/simulation.gd, content/plans]
+
+  - component: conduct-resolution
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Conduct Stack
+      summary: "A conduct sits in an intrinsic, persistent or contextual layer and answers semantic slots with plans. Contextual answers before persistent and persistent before intrinsic; within a layer the highest priority wins. Resolution happens when a step runs rather than at load, so where somebody is can change how they do a thing without rewriting the plan that asked. Because that defers the question, load-time validation asks once up front whether every intention a person can hold has an answer at all."
+      references: [agent-autonomy, plan-library]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, sim/content.gd, content/conducts/human.tres]
+
+  - component: capability-arbitration
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Capability and Slot Arbitration
+      summary: The first primitive action claims its hands capability and an object slot only while executing. Same-tick contested claims resolve by priority, request age, then SimId; the remaining capabilities are later work.
+      references: [smart-objects, tile-navigation]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, content/objects/cottage.tres]
+
+  - component: smart-objects
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Smart Objects and Physical Items
+      summary: The Cottage fixture loads a data-defined toilet with an authored type, placement, exclusive slot, and duration-based hands affordance. Storage and item entities remain later work.
+      references: [content-registry, capability-arbitration, solid-fixtures]
+    implementation:
+      status: declared
+      paths: [sim/content.gd, sim/simulation.gd, content/objects/cottage.tres]
+
+  - component: solid-fixtures
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Some Things You Stand On, Some You Stand At
+      summary: A fixture is authored either as something a person occupies — a toilet, a seat, a bed — or as something solid they stand beside, like a stove, a table or the bar. Solid fixtures block movement, so a room's furniture shapes the route through it rather than being scenery walked over, and a use order approaches an adjacent tile instead of the fixture's own. Authoring it per object rather than inferring it from the type keeps the question with the person placing the furniture. Validation refuses a solid fixture on a threshold or a starting placement, either of which would wall somebody in.
+      references: [smart-objects, tile-navigation, player-command-boundary]
+    implementation:
+      status: declared
+      paths: [sim/content.gd, sim/simulation.gd, content/objects/cottage.tres]
+
+  - component: tile-navigation
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Layered Tile Navigation
+      summary: The Cottage fixture now provides A* GoTo paths over layered square tiles, one-person live occupancy, and a paired occupiable stair portal. Paths do not reserve future tiles; dynamic rerouting and doors remain later work.
+      references: [capability-arbitration, cottage-arrival-scenario, named-places]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, sim/content.gd, content/maps/cottage.tres]
+
+  - component: named-places
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Named Map Places
+      summary: Each surface of the authored map is a named place — the cottage ground floor, the cottage upstairs, the King's Head — rather than an anonymous storey index. The map asset names every surface, so the simulation asks whether a resident is in a place instead of testing raw coordinates, and the client presents and switches places from content rather than from two hard-coded floors. A place is a rendering and containment surface only; it grants no behaviour of its own.
+      references: [tile-navigation, content-registry, village-client]
+    implementation:
+      status: declared
+      paths: [sim/content.gd, content/maps/cottage.tres, client/main.gd]
+
+  - component: doors-and-thresholds
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Doors as Occupiable Thresholds
+      summary: A door is an authored portal between two places, arbitrated exactly as the stairs already are, so walls become genuine barriers and every place is entered through a threshold the player can see. The cottage front door and the King's Head door are the first two. A threshold is also an interaction target, offering the crossing named for the end it was asked from — up or down a stair, in or out of a door. Those names are authored per end, because a place index carries no ordering from which up or out could be derived. Opening state, locking, knocking etiquette, and door-blocking remain later work.
+      references: [tile-navigation, named-places, capability-arbitration]
+    implementation:
+      status: declared
+      paths: [sim/content.gd, content/maps/cottage.tres, client/main.gd]
+
+  - component: person-interaction
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Persons Expose Interaction Affordances
+      summary: "A person is an interaction target on the same terms as a placed smart object: they carry authored slots and affordances resolved through the existing claim, capability, and priority arbitration, so no second interaction path exists. Talking is the first such affordance and applies to every resident, household or not, rather than being special-cased to one scripted neighbour. Conversation content, topics, and refusal remain later work."
+      references: [smart-objects, capability-arbitration, agent-autonomy]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, sim/content.gd, content/people/newcomers.tres]
+
+  - component: social-consequences
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Subjective Social Consequences
+      summary: World events become personal perceptions, moments, memories, relationship-ledger entries, evidence-backed beliefs, and emergent social labels.
+      references: [world-events, initiative-system]
+
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, content/social/outcomes.tres]
+  - component: initiative-system
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Village Initiatives
+      summary: "A situation larger than one person is a persistent entity with a branching graph of stages. It advances when a stage's authored condition is met — enough support gathered, enough opposition raised, a date arrived — rather than by a script deciding what happens next. Residents move it by acting on it, and what they do comes from what they already think, so the same machinery serves the pub's licence application and whatever comes after it without either being written into the engine."
+      references: [social-consequences, cottage-arrival-scenario, initiative-stances, village-calendar]
+
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, sim/content.gd, content/initiatives/cottage.tres]
+  - component: initiative-stances
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Stance Read From Evidence
+      summary: "Where somebody stands on a village question is worked out from what they already hold about the people involved — the relationship ledger and the labels the belief model produced — rather than stored as an opinion of their own. Nobody has a hidden support number that some other system set. It follows that the household's stance is inferred the same way, so a player who wants the licence granted must change what their household thinks of the landlord rather than click a lever, and somebody who has never met him has no stance at all rather than a neutral one."
+      references: [relationship-ledger, emergent-labels, initiative-system]
+
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd]
+  - component: village-calendar
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Dates That Press
+      summary: A stage may carry a date by which it must resolve. Reaching it forces the initiative on whether or not anybody did anything, so a deadline is pressure rather than decoration and neglect is itself an outcome. The clock that drives it is the ordinary in-world day clock, so a deadline is the same kind of thing as the pub's opening time.
+      references: [world-time, initiative-system]
+
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, content/initiatives/cottage.tres]
+  - component: content-registry
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Validated Content Registry
+      summary: Shared workspace RON assets currently define the Cottage Arrival scenario, people, map, placed smart objects, Human conduct, and toilet plan, loaded through typed Rust definitions. Items, recipes, and wider interaction domains remain planned content domains.
+      references: [cottage-arrival-scenario]
+    implementation:
+      status: declared
+      paths: [sim/content.gd, content/scenarios/cottage_arrival.tres, content/people/newcomers.tres, content/objects/cottage.tres]
+
+  - component: player-command-boundary
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Player Command Boundary
+      summary: "The simulation ingests typed QueueGoTo, QueueUseObject, and CancelPlayerTask commands on the next tick. QueueUseObject names any authored object and affordance, so every placed fixture and every interactable person is orderable through one command rather than through a toilet-shaped special case. Such an order is navigate-then-use: the resident walks to the fixture's tile, keeping the order at their queue head, and claims its slot only on arrival. Each resident holds an ordered player task queue; only its head dispatches into the execution engine, later orders wait, and every listed task is individually cancellable by its stable caller ID. Stable IDs receive deferred accepted or rejected receipts; cancellation at the next atomic safe boundary releases any live object slot and hands capability, then emits TaskCancelled or GoToCancelled instead of completion. An urgent need preempts the queue head under the priority bands, pausing rather than cancelling it. Ordinary AI plan routing beyond the toilet need remains later work."
+      references: [agent-autonomy, village-client, action-priority-bands, person-interaction]
+    implementation:
+      status: declared
+      paths: [sim/command.gd, sim/simulation.gd]
+
+  - component: simulation-persistence
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Simulation Persistence
+      summary: Versioned world snapshots are paired with an append-only event ledger and explicit schema migrations, carried in a vellum-save Progress record. The snapshot holds runtime state only and names the authored content it was played against by digest, so content and history stay separable.
+      references: [world-events, agent-autonomy, active-plan-save-load]
+    implementation:
+      status: declared
+      paths: [sim/save.gd, client/main.gd]
+
+  - component: pixel-art-presentation
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Pixel-Art Presentation
+      summary: 32x32 source tiles, 32x48 or 32x64 people, nearest-neighbour integer scaling, pixel-snapped orthographic placement, and client-only movement interpolation.
+      references: [village-client, tile-navigation]
+
+    implementation:
+      status: declared
+      paths: [client/main.gd]
+  - component: cottage-arrival-scenario
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Cottage Arrival Scenario
+      summary: "Two newcomers in a hand-authored two-storey cottage now provide the first headless fixture: both can traverse the paired stairs, and the fixture supplies the initial data-defined toilet interaction. Its later playable opening remains post-MVP work."
+      references: [tile-navigation, smart-objects, agent-autonomy]
+    implementation:
+      status: declared
+      paths: [content/scenarios/cottage_arrival.tres, sim/simulation.gd]
+
+  - component: setting-direction
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Timeless British Village Setting
+      summary: A warm, observant community comedy set in an analogue late twentieth-century Britain where ordinary material pressures, local institutions, and dignity create consequenceful farce.
+
+  - component: scenario-test-harness
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Seeded Runner Tests
+      summary: Headless runner tests assert stable resident identities, deferred event publication, and repeatable seed-derived event markers. The Cottage Contention composite test also drives two complete scripted fixtures and compares their semantic event ledgers without relying on a brittle golden log.
+      references: [village-simulation, cottage-arrival-scenario]
+    implementation:
+      status: declared
+      paths: [tests/simulation_tests.gd]

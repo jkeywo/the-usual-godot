@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="VillageAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://sim/village_asset.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+domain = "coordinators"
+data = {"coordinators": [{"id": "coordinator.celebrate_the_licence", "display_name": "marking the King's Head's later hours", "starts_when": "stage.granted", "roles": [{"id": "role.stand_a_round", "display_name": "Stand a round at the bar", "conduct": "conduct.filling_a_role"}, {"id": "role.take_the_corner", "display_name": "Get the corner seat before anybody else does", "conduct": "conduct.take_the_corner"}]}]}

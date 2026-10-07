@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="VillageAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://sim/village_asset.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+domain = "scenarios"
+data = {"id": "scenario.cottage_arrival", "seed": 4243, "start_time_of_day": {"hour": 16, "minute": 0}, "invitations": [{"host": "person.neighbour", "invite_at": {"hour": 16, "minute": 30}, "call_at_tile": {"place": 0, "x": 11, "y": 1}, "event_at": {"hour": 19, "minute": 0}, "venue_tile": {"place": 2, "x": 8, "y": 6}}], "people": ["person.newcomer_a", "person.newcomer_b", "person.neighbour", "person.landlord"], "map": "map.cottage", "objects": ["object.cottage_toilet", "object.cottage_kitchen_sink", "object.cottage_stove", "object.cottage_table", "object.cottage_sofa", "object.cottage_hearth", "object.cottage_bed", "object.cottage_wardrobe", "object.kings_head_bar", "object.pargeter_seat", "object.cottage_larder", "object.village_noticeboard", "object.shop_counter"], "placements": [{"person": "person.newcomer_a", "position": {"place": 0, "x": 1, "y": 1}}, {"person": "person.newcomer_b", "position": {"place": 0, "x": 2, "y": 2}}, {"person": "person.neighbour", "position": {"place": 3, "x": 12, "y": 2}}, {"person": "person.landlord", "position": {"place": 2, "x": 9, "y": 8}}]}

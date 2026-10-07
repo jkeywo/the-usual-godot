@@ -1,0 +1,77 @@
+entities:
+  - system: milestone-2-first-friday
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Milestone 2 — First Friday
+      summary: One evening spanning the cottage, the lane, and the King's Head. Invitation pressure, travel between places, ordinary shared-object queueing, and one witnessed social event are proven without attempting full village scale. The shop this milestone originally also named is now a fourth place with a counter that refills the larder, so the domestic loop closes; money, prices and jobs remain deferred with the rest of the village economy.
+      references: [cottage-arrival-mvp, first-friday-invitation, neighbour-caller, pub-visit-and-contention, initial-social-consequences, village-shop, future-economy-and-jobs]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, client, content]
+
+  - component: first-friday-invitation
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Neighbour Invitation and Time-Bound Commitment
+      summary: Around 16:30, read from the deterministic in-world day clock, the invited neighbour walks to the household's front door. The invitation is delivered by talking to them there, not by a bare clock trigger, and publishes a NeighbourInvitation world event naming its host and the 19:00 event time exactly once. Each household member then accepts a time-bound commitment to attend. The commitment is a normal Autonomous-band pursuit that lies dormant until the event time, then travels to the venue, yielding to any player order and to an active bodily need rather than overriding autonomy, and announces a QuizArrived event on reaching the pub. Richer reaction-candidate scoring against other intentions remains later work.
+      references: [agent-autonomy, player-command-boundary, action-priority-bands, world-time, world-events, neighbour-caller]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, sim/content.gd, content/scenarios/cottage_arrival.tres]
+
+  - component: neighbour-caller
+    core:
+      status: implemented
+      confidence: confirmed
+      title: The Neighbour Who Calls Round
+      summary: The inviting neighbour is a full autonomous resident rather than an off-screen name — placed in the village, routed to the cottage front door by ordinary navigation, and interactable through the same authored talk affordance every person carries. They are not household, so the player cannot order them about; the player's only purchase on them is answering the door. Their wider daily routine, and leaving again once the message lands, remain later work.
+      references: [person-interaction, agent-autonomy, doors-and-thresholds, first-friday-invitation]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, content/people/newcomers.tres, client/main.gd]
+
+  - component: pub-visit-and-contention
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Pub Travel and Service Contention
+      summary: The King's Head is its own named place entered through an authored door, holding a bar smart object that exposes a single service slot. Household agents travel there from the cottage and contend for the occupied bar slot without advance reservation through the existing deterministic claim arbitration — one is served while the other waits, then proceeds on release. Ordering at the bar is a player-targetable affordance, so the contention is reachable in play rather than only from a test harness. Richer responses such as joining a visible social queue or choosing an alternative fixture remain later work.
+      references: [tile-navigation, smart-objects, capability-arbitration, named-places, doors-and-thresholds]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, content/maps/cottage.tres, content/objects/cottage.tres]
+
+  - component: initial-social-consequences
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Participant and Witness Consequences
+      summary: Taking Mr Pargeter's corner seat while the pub is open emits a PargeterSeatTaken world event and forms distinct perceptions — the participant sat in the seat, each co-present witness tutted — and establishes the visible household knowledge that the seat is his. Co-presence is membership of the King's Head place, not a coordinate threshold. This is the deliberately narrow first cut of the wider social-consequences model; memories, relationship ledgers, and beliefs remain later work.
+      references: [world-events, social-consequences, world-time, named-places]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, client/main.gd]
+
+  - component: pub-seat-lore
+    core:
+      status: implemented
+      confidence: confirmed
+      title: The Pargeter Seat
+      summary: The left-hand corner seat is an authored smart object in the King's Head, drawn as a seat and targetable by the player like any other fixture, so the household can blunder into it under their own steam. Sitting there while the pub is open provokes a witness tut and the friendly household lore that Mr Pargeter received the news about the pig there. It has no supernatural or need effect; the client narrates it in the event feed and status card.
+      references: [setting-direction, initial-social-consequences, smart-objects, pixel-art-presentation]
+    implementation:
+      status: declared
+      paths: [content/objects/cottage.tres, client/main.gd]
+
+  - component: village-shop
+    core:
+      status: implemented
+      confidence: confirmed
+      title: The Village Shop
+      summary: "A fourth place off the lane with a counter that refills the household larder to its authored levels. It exists because recipes drain stock and nothing put it back, so a cottage that cooked its way through the cupboards simply stopped cooking. Nothing is bought: there is no money, no price and no shopkeeper's inventory to deplete, because those belong with jobs and wages in the deferred village economy. What the counter restores is authored on the affordance rather than known to the simulation, so a second cupboard elsewhere would be a content change. Running low is scored like any other appetite, so somebody goes when the larder is empty enough to be worth the walk and not before."
+      references: [smart-objects, agent-autonomy, content-registry, future-economy-and-jobs]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, content/objects/cottage.tres, content/maps/cottage.tres, content/intentions/cottage.tres]

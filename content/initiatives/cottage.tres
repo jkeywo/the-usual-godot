@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="VillageAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://sim/village_asset.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+domain = "initiatives"
+data = {"initiatives": [{"id": "initiative.pub_hours", "display_name": "the King's Head's application for later Friday hours", "proposer": "person.landlord", "opens_at": "stage.gathering_support", "stages": [{"id": "stage.gathering_support", "notice": "The King's Head has applied for later hours on Fridays, and occasional music. Views to the licensing meeting at 21:00.", "transitions": [{"to": "stage.granted", "when": {"kind": "SupportAtLeast", "value": 2}}, {"to": "stage.refused", "when": {"kind": "OppositionAtLeast", "value": 2}}, {"to": "stage.lapsed", "when": {"kind": "OnOrAfter", "value": {"hour": 21, "minute": 0}}}]}, {"id": "stage.granted", "notice": "The King's Head has its later hours. There will be music on Fridays.", "concluded": true}, {"id": "stage.refused", "notice": "The King's Head's application was refused. Last orders stay where they were.", "concluded": true}, {"id": "stage.lapsed", "notice": "The licensing meeting came and went with barely a word said. The application lapsed.", "concluded": true}]}]}

@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="VillageAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://sim/village_asset.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+domain = "recipes"
+data = {"recipes": [{"id": "recipe.tea", "display_name": "a cup of tea", "tool": "object.cottage_stove", "ingredients": [{"item": "item.teabag", "count": 1}, {"item": "item.milk", "count": 1, "optional": true}], "output": "item.tea", "duration_ticks": 4, "recovers": {"need": "Hunger", "amount": 25}, "quality_bonus": 10}, {"id": "recipe.toast", "display_name": "toast", "tool": "object.cottage_stove", "ingredients": [{"item": "item.bread", "count": 1}], "output": "item.toast", "duration_ticks": 6, "recovers": {"need": "Hunger", "amount": 45}, "quality_bonus": 0}, {"id": "recipe.supper", "display_name": "pasta with tomato sauce", "tool": "object.cottage_stove", "ingredients": [{"item": "item.pasta", "count": 1}, {"item": "item.sauce", "count": 1}, {"item": "item.cheese", "count": 1, "optional": true}], "output": "item.supper", "duration_ticks": 12, "recovers": {"need": "Hunger", "amount": 80}, "quality_bonus": 20}]}

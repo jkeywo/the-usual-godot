@@ -1,0 +1,432 @@
+[
+  {
+    "tick": 1,
+    "kind": {
+      "kind": "PlayerCommandAccepted",
+      "value": {
+        "task": 201
+      }
+    }
+  },
+  {
+    "tick": 1,
+    "kind": {
+      "kind": "PlayerCommandAccepted",
+      "value": {
+        "task": 202
+      }
+    }
+  },
+  {
+    "tick": 1,
+    "kind": {
+      "kind": "PlayerCommandAccepted",
+      "value": {
+        "task": 203
+      }
+    }
+  },
+  {
+    "tick": 1,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "3210927224443541717"
+      }
+    }
+  },
+  {
+    "tick": 2,
+    "kind": {
+      "kind": "PlayerCommandAccepted",
+      "value": {
+        "task": 203
+      }
+    }
+  },
+  {
+    "tick": 2,
+    "kind": {
+      "kind": "GoToCancelled",
+      "value": {
+        "task": 203,
+        "resident": 1,
+        "destination": {
+          "place": 0,
+          "x": 1,
+          "y": 1
+        }
+      }
+    }
+  },
+  {
+    "tick": 2,
+    "kind": {
+      "kind": "GoToArrived",
+      "value": {
+        "resident": 1,
+        "destination": {
+          "place": 0,
+          "x": 3,
+          "y": 1
+        }
+      }
+    }
+  },
+  {
+    "tick": 2,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "7712080904671328486"
+      }
+    }
+  },
+  {
+    "tick": 3,
+    "kind": {
+      "kind": "ObjectUseStarted",
+      "value": {
+        "resident": 1,
+        "object": "object.cottage_toilet",
+        "affordance": "affordance.use_toilet"
+      }
+    }
+  },
+  {
+    "tick": 3,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "15274758129853365925"
+      }
+    }
+  },
+  {
+    "tick": 4,
+    "kind": {
+      "kind": "ObjectUseCompleted",
+      "value": {
+        "resident": 1,
+        "object": "object.cottage_toilet",
+        "affordance": "affordance.use_toilet"
+      }
+    }
+  },
+  {
+    "tick": 4,
+    "kind": {
+      "kind": "NeedRecovered",
+      "value": {
+        "resident": 1,
+        "need": "Toilet",
+        "value": 0
+      }
+    }
+  },
+  {
+    "tick": 4,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "2554552168337250922"
+      }
+    }
+  },
+  {
+    "tick": 5,
+    "kind": {
+      "kind": "GoToArrived",
+      "value": {
+        "resident": 1,
+        "destination": {
+          "place": 0,
+          "x": 4,
+          "y": 1
+        }
+      }
+    }
+  },
+  {
+    "tick": 5,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "8560777041098173063"
+      }
+    }
+  },
+  {
+    "tick": 6,
+    "kind": {
+      "kind": "GoToArrived",
+      "value": {
+        "resident": 1,
+        "destination": {
+          "place": 0,
+          "x": 3,
+          "y": 1
+        }
+      }
+    }
+  },
+  {
+    "tick": 6,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "3653115863384180543"
+      }
+    }
+  },
+  {
+    "tick": 7,
+    "kind": {
+      "kind": "ObjectUseStarted",
+      "value": {
+        "resident": 1,
+        "object": "object.cottage_toilet",
+        "affordance": "affordance.use_toilet"
+      }
+    }
+  },
+  {
+    "tick": 7,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "7723308228382282731"
+      }
+    }
+  },
+  {
+    "tick": 8,
+    "kind": {
+      "kind": "ObjectUseCompleted",
+      "value": {
+        "resident": 1,
+        "object": "object.cottage_toilet",
+        "affordance": "affordance.use_toilet"
+      }
+    }
+  },
+  {
+    "tick": 8,
+    "kind": {
+      "kind": "NeedRecovered",
+      "value": {
+        "resident": 1,
+        "need": "Toilet",
+        "value": 0
+      }
+    }
+  },
+  {
+    "tick": 8,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "11003824623838975123"
+      }
+    }
+  },
+  {
+    "tick": 9,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "14204168524640359750"
+      }
+    }
+  },
+  {
+    "tick": 10,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "16919656179039409678"
+      }
+    }
+  },
+  {
+    "tick": 11,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "8949653176114558723"
+      }
+    }
+  },
+  {
+    "tick": 12,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "14354767545585609242"
+      }
+    }
+  },
+  {
+    "tick": 13,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "9400681141292035859"
+      }
+    }
+  },
+  {
+    "tick": 14,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "13897660873715448748"
+      }
+    }
+  },
+  {
+    "tick": 15,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "13065880908292016080"
+      }
+    }
+  },
+  {
+    "tick": 16,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "83415274812484195"
+      }
+    }
+  },
+  {
+    "tick": 17,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "139158637766178115"
+      }
+    }
+  },
+  {
+    "tick": 18,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "12854461572110992664"
+      }
+    }
+  },
+  {
+    "tick": 19,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "3711588923315437490"
+      }
+    }
+  },
+  {
+    "tick": 20,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "15468233243779223826"
+      }
+    }
+  },
+  {
+    "tick": 21,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "1978789653239987376"
+      }
+    }
+  },
+  {
+    "tick": 22,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "8702420235143925794"
+      }
+    }
+  },
+  {
+    "tick": 23,
+    "kind": {
+      "kind": "GoToArrived",
+      "value": {
+        "resident": 2,
+        "destination": {
+          "place": 0,
+          "x": 3,
+          "y": 10
+        }
+      }
+    }
+  },
+  {
+    "tick": 23,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "6304470648716094720"
+      }
+    }
+  },
+  {
+    "tick": 24,
+    "kind": {
+      "kind": "MealPrepared",
+      "value": {
+        "cook": 2,
+        "recipe": "recipe.supper",
+        "extras": 1
+      }
+    }
+  },
+  {
+    "tick": 24,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "3219601609369175312"
+      }
+    }
+  },
+  {
+    "tick": 25,
+    "kind": {
+      "kind": "NeedRecovered",
+      "value": {
+        "resident": 2,
+        "need": "Hunger",
+        "value": 0
+      }
+    }
+  },
+  {
+    "tick": 25,
+    "kind": {
+      "kind": "MealEaten",
+      "value": {
+        "eater": 2,
+        "item": "item.supper"
+      }
+    }
+  },
+  {
+    "tick": 25,
+    "kind": {
+      "kind": "TickCompleted",
+      "value": {
+        "keyed_marker": "16892131379014494445"
+      }
+    }
+  }
+]

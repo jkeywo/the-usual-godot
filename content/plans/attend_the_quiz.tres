@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="VillageAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://sim/village_asset.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+domain = "plans"
+data = {"id": "plan.attend_the_quiz", "priority": 0, "steps": [{"kind": "GoTo", "value": {"tile": {"place": 2, "x": 8, "y": 6}}}, {"kind": "Conduct", "value": {"slot": "conduct.have_a_drink"}}]}

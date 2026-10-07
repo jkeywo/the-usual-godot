@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="VillageAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://sim/village_asset.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+domain = "conducts"
+data = {"id": "conduct.human", "layer": "Intrinsic", "methods": [{"slot": "conduct.eat", "plan": "plan.make_a_meal", "priority": 0}, {"slot": "conduct.rest", "plan": "plan.sleep", "priority": 0}, {"slot": "conduct.use_toilet", "plan": "plan.toilet_need", "priority": 0}, {"slot": "conduct.wash", "plan": "plan.wash", "priority": 0}, {"slot": "conduct.warm_up", "plan": "plan.warm_up", "priority": 0}, {"slot": "conduct.sit_down", "plan": "plan.sit_down", "priority": 0}, {"slot": "conduct.attend", "plan": "plan.attend_the_quiz", "priority": 0}, {"slot": "conduct.have_a_drink", "plan": "plan.have_a_drink", "priority": 0}, {"slot": "conduct.get_the_shopping", "plan": "plan.get_the_shopping", "priority": 0}, {"slot": "conduct.cook", "plan": "plan.make_supper", "priority": 20, "needs_recipe": "recipe.supper"}, {"slot": "conduct.cook", "plan": "plan.make_toast", "priority": 10, "needs_recipe": "recipe.toast"}, {"slot": "conduct.cook", "plan": "plan.make_tea", "priority": 0, "needs_recipe": "recipe.tea"}]}

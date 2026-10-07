@@ -1,0 +1,44 @@
+entities:
+  - system: milestone-4-village-initiatives
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Milestone 4 — Village Initiatives
+      summary: Prove a generic, branching initiative model through the King's Head extended-hours application, rather than scripting one dispute chain.
+      references: [pub-hours-initiative, initiative-calendar-and-noticeboard, group-activity-coordinators, initiative-system]
+
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, client/main.gd, content/initiatives/cottage.tres, content/coordinators/cottage.tres]
+  - component: pub-hours-initiative
+    core:
+      status: implemented
+      confidence: confirmed
+      title: King's Head Hours Initiative
+      summary: "The landlord applies for later Friday hours and occasional music. It opens gathering support and ends granted, refused, or withdrawn, depending on what the village does about it before the licensing date. Nobody is assigned a side: a resident supports or objects according to what they already hold about the landlord and about the people who have spoken, which is why the same application can go either way in two otherwise identical evenings. The household have no special weight beyond being two more villagers with opinions."
+      references: [initiative-system, initiative-stances, social-consequences]
+
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, content/initiatives/cottage.tres, content/people/newcomers.tres]
+  - component: initiative-calendar-and-noticeboard
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Calendar and Knowledge-Aware Noticeboard
+      summary: "The noticeboard is a fixture in the world carrying whatever has been posted publicly. Reading it is an ordinary interaction, and what it shows is what a village noticeboard shows — the application, the date, the outcome once there is one. It never reports who privately supports what, because that is not written on it. The player learns of an initiative by their household reading the board or hearing of it, on the same terms as anything else they are not entitled to know."
+      references: [initiative-system, village-calendar, knowledge-aware-presentation]
+
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, client/main.gd]
+  - component: group-activity-coordinators
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Group Activity Coordinators
+      summary: "A coordinator hands out roles for something that needs several people, and each participant pursues their role as an ordinary intention with an ordinary plan. Nothing about a role suspends the person holding it: a more pressing need still wins, so somebody can simply not turn up. That is the point rather than a defect — a group effort that cannot fail is a cutscene, and the interesting outcome is the one where the person who was to fetch the cake got caught up elsewhere."
+      references: [capability-arbitration, initiative-system, agent-autonomy]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, content/coordinators/cottage.tres, content/conducts/take_the_corner.tres]

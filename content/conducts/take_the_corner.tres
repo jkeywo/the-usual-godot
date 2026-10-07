@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="VillageAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://sim/village_asset.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+domain = "conducts"
+data = {"id": "conduct.take_the_corner", "layer": "Contextual", "methods": [{"slot": "conduct.play_your_part", "plan": "plan.take_the_corner", "priority": 10}]}

@@ -1,0 +1,74 @@
+name: Godot CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: godot-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen --group dev
+      - uses: actions/cache@v4
+        with:
+          path: .tools
+          key: godot-4.7.2-linux-templates-v1
+      - id: godot
+        run: uv run python tools/setup_godot.py
+      - run: uv run gdformat --check sim client tests
+      - run: uv run gdlint sim client tests
+      - run: uv run pasm validate pasm/spec
+      - run: uv run pasm scan pasm/spec --json
+      - run: uv run python tools/check_architecture.py
+      - run: uv run python tools/run_checked.py "${{ steps.godot.outputs.godot }}" --headless --editor --path . --import
+      - run: uv run python tools/run_checked.py "${{ steps.godot.outputs.godot }}" --headless --path . --script tests/run.gd
+      - run: uv run python tools/run_checked.py "${{ steps.godot.outputs.godot }}" --headless --path . --quit-after 240 -- --test-suite
+      - run: mkdir -p build/windows build/web
+      - run: uv run python tools/run_checked.py "${{ steps.godot.outputs.godot }}" --headless --path . --export-release Windows
+      - run: uv run python tools/run_checked.py "${{ steps.godot.outputs.godot }}" --headless --path . --export-release Web
+      - run: uv run python tools/prepare_web.py
+      - run: uv run playwright install --with-deps chromium
+      - run: uv run python tools/browser_acceptance.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: build/windows/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: acceptance-reports
+          path: build/reports/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web/
+  windows-smoke:
+    needs: check-build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows
+          path: build/windows
+      - run: python tools/run_checked.py build/windows/TheUsual.exe --headless --quit-after 240 -- --test-suite
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: [check-build, windows-smoke]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,513 @@
+entities:
+  - decision: working-title-and-repository
+    core:
+      status: accepted
+      confidence: confirmed
+      title: The Usual
+      summary: The game uses the working title The Usual, the GitHub repository name `the-usual`, and the Rust crate prefix `village_` for the initial simulation and client crates.
+      references: [the-usual-runtime]
+
+  - decision: rust-and-bevy-baseline
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Rust 1.95 and Bevy 0.18.1
+      summary: Windows desktop is the initial target. Rust 1.95.0 and Bevy 0.18.1 are pinned; the Bevy 0.19 release candidate is deliberately excluded.
+      rationale: [Stable tooling gives the first prototype a dependable baseline while Bevy release changes remain substantial.]
+      references: [village-simulation, village-client]
+
+  - decision: headless-simulation-boundary
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Headless Simulation and Bevy Client Boundary
+      summary: "`village_sim` uses Bevy ECS-oriented crates only. `village_game` owns full Bevy integration, rendering, input, UI, and audio."
+      references: [village-simulation, village-client]
+
+  - decision: deterministic-tick-and-phase-order
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Fixed 250 ms Tick and Explicit Schedule
+      summary: Pause, 1x, 4x, and 16x alter tick consumption but never semantics. Each tick runs ingest orders/events, update world and needs, choose/revise plans, allocate capabilities, tick atomic actions, then resolve and publish events.
+      references: [tick-driver, world-events]
+
+  - decision: in-world-day-clock
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Deterministic In-World Day Clock
+      summary: An in-world time of day derives deterministically from the tick at a fixed one in-world minute per tick, wrapping over a 24-hour day. Each scenario authors its starting time; the value is a pure function of tick and start, never of presentation speed, and the client renders it read-only. Time-bound village events such as invitations and opening hours reference this clock.
+      references: [deterministic-tick-and-phase-order, authoritative-client-projection]
+
+  - decision: deferred-event-observability
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Next-Tick Event Observability
+      summary: Actions publish immutable events at a tick's end and all systems consume them only in the next tick's ingest phase.
+      references: [world-events, tick-driver]
+
+  - decision: keyed-deterministic-randomness
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Keyed Deterministic Randomness
+      summary: Stateless random draws derive from world seed, tick, event id, and purpose so unrelated changes do not advance a shared stream or reshuffle outcomes.
+      references: [village-simulation, world-events]
+
+  - decision: authored-and-runtime-identities
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Readable Definitions and Persistent SimIds
+      summary: Authored definitions use readable keys; spawned instances receive monotonic SimId values persisted in saves and events. Bevy Entity remains an implementation detail.
+      references: [content-registry, simulation-persistence]
+
+  - decision: tiled-spatial-model
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Layered Grid with Live Occupancy
+      summary: A layered square-tile grid uses A* paths. Doors and stairs are explicit occupiable portals; ordinary tiles have one-person live capacity, with no advance reservation.
+      references: [tile-navigation]
+
+  - decision: physical-item-model
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Spatial Stacks and Significant Entities
+      summary: Containers store typed item stacks. Held, placed, or otherwise individually significant items become world entities; generic supplies remain stacks.
+      references: [smart-objects]
+
+  - decision: smart-object-execution-contract
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Execution-Time Smart Object Claims
+      summary: Object definitions expose named slots, storage, and affordances. Affordances expand into plan methods and claim their slots only while executing.
+      references: [smart-objects, plan-library]
+
+  - decision: deterministic-claim-arbitration
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Claim Arbitration
+      summary: Simultaneous capability and object claims resolve by submitted priority, request age, then requester SimId. Conduct and social rules may affect priority but not deterministic tie-breaking.
+      references: [capability-arbitration]
+
+  - decision: safe-boundary-cancellation
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Safe-Boundary Cancellation
+      summary: Cancellation is requested for the next tick. A primitive completes its smallest safe boundary, releases claims, reports Cancelled, and lets its plan handle the result.
+      references: [agent-autonomy, capability-arbitration]
+
+  - decision: action-priority-bands
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Autonomous, Player, Urgent, and Mandatory Priority Bands
+      summary: Actions compete in ordered priority bands Autonomous < Player < Urgent < Mandatory. A band contributes to effective priority only; the deterministic tie-break of priority, request age, then SimId is unchanged. Player orders outrank autonomous needs, so a household queue owns a resident until it drains. A need that crosses its authored urgent threshold escalates to the Urgent band and preempts the resident's queue head, which pauses at its next safe boundary and resumes once the need is satisfied rather than being cancelled. Mandatory, reserved for accident consequences that interrupt everything, is modelled later.
+      references: [safe-boundary-cancellation, deterministic-claim-arbitration, agent-autonomy, player-command-boundary]
+
+  - decision: data-first-content-pipeline
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Typed RON Content Pipeline
+      summary: RON assets define scenarios, maps, people, objects, items, recipes, plans, and conducts. Registered Rust primitives, predicates, scorers, and schemas supply typed implementation.
+      references: [content-registry, plan-library]
+
+  - decision: strict-content-validation-and-reload
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Transactional Content Validation and Reload
+      summary: Scenario load aggregates every validation error and fails if any remain. Hot reload retains the last valid content set until a replacement validates; active plans retain their compiled snapshots while newly selected plans use the replacement.
+      references: [content-registry, plan-library]
+
+  - decision: semantic-headless-tests
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Seeded Semantic Tests
+      summary: Primary tests are headless, seeded scenarios that assert named outcomes such as completing a recipe, reacting to contention, and releasing claims after cancellation.
+      references: [scenario-test-harness]
+
+  - decision: snapshots-and-event-ledger
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Versioned Snapshots and Event Ledger
+      summary: Saves consist of versioned world snapshots plus an append-only event ledger, with explicit schema migrations as formats change.
+      references: [simulation-persistence]
+
+  - decision: authoritative-client-projection
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Read-Only Client Projection
+      summary: The simulation is authoritative and emits read-only render snapshots after consumed ticks. The Bevy client mirrors those snapshots into presentation entities.
+      references: [village-simulation, village-client]
+
+  - decision: typed-player-commands
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Next-Tick Player Command Validation
+      summary: The client submits typed PlayerCommands to a simulation inbox. The next ingest phase validates each and publishes accepted or rejected results; accepted orders follow normal planning.
+      references: [player-command-boundary]
+
+  - decision: discrete-simulation-smooth-presentation
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Tile-Exact Simulation with Client Interpolation
+      summary: Simulation positions change tile-to-tile. The client interpolates only between render snapshots and never feeds interpolation back into simulation state.
+      references: [tile-navigation, pixel-art-presentation]
+
+  - decision: 32-pixel-art-contract
+    core:
+      status: accepted
+      confidence: confirmed
+      title: 32x32 Pixel-Art Contract
+      summary: Source tiles are 32x32. People use 32x48 or 32x64 frames as required, rendered with nearest-neighbour sampling, integer scaling, and pixel-snapped orthographic placement.
+      references: [pixel-art-presentation]
+
+  - decision: cottage-client-asset-provenance
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Curated Cottage Client Assets
+      summary: The playable Cottage client resolves its documented, curated subset of 32px character, interior, furniture, and house assets from the shared workspace assets root, including when launched through Cargo. Clothing presentation is a separate client-only atlas layer whose derived runtime texture performs HSV hue rotation while preserving alpha and value; it never alters authoritative state.
+      references: [village-client, pixel-art-presentation]
+
+  - decision: player-ground-move-command
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Deferred Ground Move Command
+      summary: A selected household resident receives a typed QueueGoTo command from a short right-click on the focused floor. The simulation validates the destination, initially arbitrates ordinary live occupancy, and deterministically replans around occupied tiles and other residents' immediate movement targets if a later next step is blocked; right-drag remains a client-only camera gesture.
+      references: [player-command-boundary, tile-navigation, village-client]
+
+  - decision: oversized-cottage-actors-and-furniture
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Oversized Cottage Actors and Furniture
+      summary: The Cottage client keeps its authored 32px world grid and house tiles at source size, then displays curated furniture and character frames at a nearest-neighbour 2x presentation scale. This changes presentation scale only; authoritative TilePosition coordinates and simulation navigation remain unchanged.
+      references: [village-client, pixel-art-presentation, tile-navigation]
+
+  - decision: cottage-client-selection-is-presentation-only
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Client-Only Resident Selection
+      summary: The selected newcomer, their status card, and UI interactions belong entirely to the Bevy client. The card renders only immutable snapshot fields and does not create, alter, or infer simulation state.
+      references: [village-client, player-command-boundary]
+
+  - decision: cottage-client-camera-is-presentation-only
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Client-Only Camera and Floor Focus
+      summary: Cottage camera pan, bounded integer zoom, focused floor, and selected-resident follow are transient Bevy client state. Following derives floor focus from immutable authoritative resident snapshots after portal traversal; it neither mutates nor influences the deterministic simulation.
+      references: [village-client, tile-navigation, pixel-art-presentation]
+
+  - decision: cottage-client-order-feedback-and-audio
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Deferred Client Order Feedback and UI Audio
+      summary: The Cottage client owns stable task-ID allocation, pending presentation, and one-time display of immutable deferred command receipts; it submits typed orders but never changes simulation state directly. UI click/tap choice and bounded 0.94x to 1.06x pitch variation use client-local entropy and are never derived from or fed into the simulation seed or ledger.
+      references: [village-client, player-command-boundary, cottage-player-order-cancellation]
+
+  - decision: cottage-client-cancellation-event-feed
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Client Cancellation Feedback Uses the Immutable Ledger
+      summary: The Cottage client enables cancellation only for the selected resident's snapshot-projected queued or active task. It submits CancelPlayerTask without local simulation mutation, displays the deferred cancellation receipt, and advances a client-only cursor through the append-only event ledger so waiting, use, completion, and released-on-cancellation feedback appears once.
+      references: [village-client, player-command-boundary, cottage-player-order-cancellation]
+
+  - decision: modular-shared-content-assets
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Shared Domain Content Assets
+      summary: A workspace-level assets/content tree holds domain files for scenario, map, people, objects, items, recipes, plans, and conducts. Scenarios assemble them by readable IDs.
+      references: [content-registry]
+
+  - decision: player-role-and-core-pressure
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Household Orders in an Autonomous Village
+      summary: The player manages only the newcomer household through queued, promoted, forced, and cancelled tasks. The core pressure balances bodily and domestic needs, personal priorities, and belonging in the village.
+      references: [agent-autonomy, player-command-boundary, setting-direction]
+
+  - decision: intention-plan-and-conduct-model
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Utility Intentions, Plan Libraries, and Conducts
+      summary: Intentions are continuously utility-scored with intention-owned hysteresis. Recursive HTN-like namespaced plans may call conduct methods; intrinsic, persistent, and contextual conduct layers select priority-ordered implementations, may delegate downward, and fail explicitly when absent.
+      references: [agent-autonomy, plan-library, conduct-resolution]
+
+  - decision: capabilities-and-group-coordination
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Concurrent Capabilities and Group Coordinators
+      summary: Atomic actions use individually arbitrated capabilities so compatible acts can overlap. Coordinating event entities distribute roles and constraints for group activity, but participants still execute ordinary atomic tasks and can defect.
+      references: [capability-arbitration, agent-autonomy]
+
+  - decision: relationship-memory-belief-model
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Directional Social History
+      summary: Events produce subjective perceptions, temporary moments, salience- and trait-decayed memories, directional multidimensional relationship-ledger entries, evidence-backed beliefs, and emergent labels. The player only sees household knowledge, observation, hearsay, or inference.
+      references: [social-consequences, world-events]
+
+  - decision: generic-village-initiatives
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Generic Branching Initiatives
+      summary: Persistent Initiative entities represent larger local situations with systemic predicates, branching state graphs, calendar pressures, stakeholder actions, and knowledge-aware public surfaces rather than bespoke scripted chains.
+      references: [initiative-system, social-consequences]
+
+  - decision: places-are-named-content-surfaces
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Places Are Named in Content, Not Inferred from Coordinates
+      summary: The map asset names every surface it defines, so a place is authored content rather than a bare storey index or a coordinate range hard-coded in Rust. The simulation asks whether a resident is in a named place; the client enumerates and switches places from the loaded map instead of assuming two floors. This replaces the interim pub region constant, which decided membership of the King's Head by testing a minimum x coordinate.
+      references: [named-places, tile-navigation, content-registry]
+
+  - decision: persons-are-interaction-targets
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Persons Expose Affordances Like Smart Objects
+      summary: Interacting with a person reuses the smart-object slot, capability, and priority arbitration rather than introducing a parallel conversation system. Every person carries authored affordances — talk is the first — so household and non-household residents are addressed by one mechanism and contention over someone's attention is arbitrated exactly as contention over a toilet is. Dialogue content, topics, and refusal are later work layered on this boundary, not a second path around it.
+      references: [person-interaction, smart-objects, capability-arbitration, agent-autonomy]
+
+  - decision: one-generic-object-use-command
+    core:
+      status: accepted
+      confidence: confirmed
+      title: A Single Player Command for Using Anything
+      summary: The player command boundary carries QueueUseObject naming an object and affordance, replacing the toilet-specific QueueUseToilet. A fixture is reachable in play precisely when it is authored and drawn, so the King's Head bar and Mr Pargeter's seat need no bespoke command, no bespoke button, and no engine call that only tests can make. The client targets fixtures by clicking them rather than through one hard-coded action button.
+      references: [player-command-boundary, village-client, smart-objects]
+
+  - decision: saves-store-runtime-state-against-a-content-digest
+    core:
+      status: accepted
+      confidence: confirmed
+      title: A Save Records What Happened, Not Where It Happened
+      summary: "A save carries runtime state only — the roster, in-flight plans, queues, claims, moments, memories, relationships, beliefs, and the event ledger — and never the authored village. Content is reloaded from assets on restore, and the save carries a digest of the content it was played against so a mismatch is refused with a reason rather than restoring residents into walls. It rides in a vellum-save Progress record, which supplies the format number, the self-hash, and the migration seam. The seam is established while the chain is still empty, because the cheapest time to add one is before it is needed."
+      references: [active-plan-save-load, simulation-persistence, snapshots-and-event-ledger]
+
+  - decision: replay-as-save-is-not-for-this-game
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Snapshots, Not a Command Log
+      summary: "The fleet's other simulations save a seed plus the log of accepted commands and replay it on load, and vellum-replay states that contract. The Usual does not, for two reasons that are structural rather than preference: it advances on a fixed tick rather than on commands, so a log would have to encode the passage of time as commands; and a plan caught mid-stride is exactly what this milestone must preserve, which a replay reconstructs rather than stores. vellum-save's Run half and its divergence Ledger are therefore deliberately unused. The event ledger this game keeps is a semantic log for the interface and for social consequence, and is not the same object."
+      references: [active-plan-save-load, simulation-persistence, tick-driver]
+
+  - decision: labels-use-entry-and-exit-thresholds
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Two Thresholds, Never One
+      summary: A label is applied at one confidence threshold and removed at a lower one. A single threshold would let somebody hold and lose a reputation on alternate ticks while their confidence hovered at the boundary, which reads as the simulation twitching rather than as an opinion. The same shape already governs autonomous intentions, so this follows that idiom rather than introducing a second way of expressing the same idea.
+      references: [emergent-labels, agent-autonomy, belief-and-label-model]
+
+  - decision: confidence-ebbs-so-reputations-lift
+    core:
+      status: accepted
+      confidence: confirmed
+      title: A Reputation Nobody Renews Fades
+      summary: Belief confidence drains a little each tick, so a label lifts on its own once nothing happens to renew it. Without an ebb there is no way back from a first impression, and a village where one bad evening marks somebody permanently is not the one this game is about. It also gives the trend something to report — a belief can be observed hardening or softening rather than only being present or absent.
+      references: [emergent-labels, setting-direction, salience-is-what-makes-a-slight-ordinary]
+
+  - decision: traits-weight-forgetting-in-integers
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Temperament Is a Ratio, Not a Float
+      summary: A trait that changes how fast someone forgets is authored as an integer numerator and denominator, and decay is computed in integer arithmetic. Floating point would make the rate at which a village grudge fades depend on the machine it faded on, and that rate is carried in a save — a difference of one ulp is a save that reloads into a subtly different evening. The fleet reaches the same conclusion elsewhere, which is why vellum's scripting is configured without floats at all.
+      references: [personal-traits, episodic-memory, active-plan-save-load]
+
+  - decision: a-conduct-passes-over-what-it-cannot-cook
+    core:
+      status: accepted
+      confidence: confirmed
+      title: The First Precondition Is Having the Ingredients
+      summary: "A conduct method may name the recipe it depends on, and the stack skips it when the larder cannot supply it. This is the only precondition in the system and it is deliberate: without it a resident makes the same meal forever and an empty cupboard changes nothing, which drains the point out of having ingredients at all. General preconditions over arbitrary world state stay deferred with the rest of HTN planning; this is the narrow case that recipes cannot do without."
+      references: [recipes, conduct-resolution, plan-library]
+
+  - decision: optional-ingredients-set-quality
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Cheese Makes It a Better Supper
+      summary: "An optional ingredient is used when it is there and skipped when it is not, and its presence raises the quality of what comes out rather than gating whether the dish can be made. Quality then colours how much of a need the meal answers. This keeps a nearly bare cupboard playable — the household still eats — while making a well-stocked one visibly better, which is the ordinary domestic texture the game is about rather than a failure state."
+      references: [recipes, bodily-needs, setting-direction]
+
+  - decision: one-scored-set-of-intentions
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Everything an Agent Might Want Competes on One Table
+      summary: "Bodily needs, accepted commitments and social pressure are all intentions, scored against each other every tick rather than living in separate systems with precedence rules between them. Two such rules had already accumulated — a commitment that outranked ordinary appetite, and a belief consulted only when choosing where to stand at an event — and each was a sign of the same missing thing. Under one table, going to the quiz is attractive because its hour is near and less attractive because somebody you think poorly of will be there, and neither fact needs its own branch in the engine."
+      references: [agent-autonomy, bodily-needs, first-friday-invitation, emergent-labels]
+
+  - decision: authored-integer-utility-curves
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Urgency Is an Authored Curve, in Integers
+      summary: "An intention scores through an authored piecewise-linear curve from its input — how pressing a need is, how many minutes until an event — to a score, with additive authored modifiers on top. Curves rather than weights, because most appetites are ignorable until quite suddenly they are not, and a single multiplier cannot say that. Integers throughout, for the same reason trait weights are integers: a score decides what somebody does, that decision rides in a save, and a float would make the evening depend on the machine it was played on."
+      references: [agent-autonomy, traits-weight-forgetting-in-integers, active-plan-save-load]
+
+  - decision: plans-decompose-and-call-conducts
+    core:
+      status: accepted
+      confidence: confirmed
+      title: A Plan May Expand, and May Ask How
+      summary: "A plan step is a primitive, a nested plan, or a semantic call answered by the conduct stack at the moment it runs. Decomposition is what lets a meal be authored as gathering, cooking and eating rather than as one opaque use, and the semantic call is what lets a conduct answer how this particular person does that. Resolving the call late rather than at load is the point: it is what allows a contextual conduct to change the answer without rewriting the plan that asked."
+      references: [plan-library, conduct-resolution, agent-autonomy]
+
+  - decision: an-affordance-names-the-need-it-answers
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Recovery Is Authored on the Affordance
+      summary: An affordance declares which need it answers and by how much, so a bed becomes restful, a hearth warming and a stove filling by editing content rather than code. The simulation holds no table of which fixture serves which appetite. This is what stops the six needs arriving as six special cases in the way the toilet did, and it means the shop, the pub and any later building can serve needs the moment somebody authors them.
+      references: [bodily-needs, smart-objects, initial-needs-and-recipes]
+
+  - decision: one-need-drives-a-resident-at-a-time
+    core:
+      status: accepted
+      confidence: confirmed
+      title: The Most Pressing Need Wins, and Keeps Winning
+      summary: "A resident pursues one need at a time — the most pressing of those past their activation threshold — and keeps pursuing it until it falls below its retention threshold, rather than reconsidering every tick. Without the hysteresis two nearly equal appetites would trade the resident back and forth and nothing would ever be satisfied. This is a placeholder for scoring rather than scoring itself: agent-autonomy replaces it with utility curves that weigh a need against commitments, beliefs and everything else, at which point this rule goes away rather than being extended."
+      references: [bodily-needs, agent-autonomy, action-priority-bands]
+
+  - decision: the-knowledge-boundary-is-structural
+    core:
+      status: accepted
+      confidence: confirmed
+      title: What the Player Cannot See Is Not Sent
+      summary: A resident's private state is withheld by being absent from the read model rather than by the client declining to display it. Everything the player may not know about someone outside the household — their needs, intentions, orders, moments, memories, and what they hold about other people — lives in one optional block that is simply not populated for them. A conditional the presentation layer had to honour would be one refactor away from leaking, and the earlier read model did leak, handing the client a neighbour's memories the moment she was spawned. The omniscient developer view is a separate projection rather than a flag on this one, for the same reason.
+      references: [household-knowledge-projection, knowledge-aware-presentation, village-client]
+
+  - decision: salience-is-what-makes-a-slight-ordinary
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Memories Fade on a Salience Score
+      summary: "An episodic memory is not a permanent fact: it carries a salience that decays each tick from an authored rate per kind of memory, and lapses when that reaches nothing. The village is meant to be forgiving, so an ordinary embarrassment stops mattering on its own without anything having to clear it. The relationship entry a memory wrote survives its lapse, which is how a slight can leave a residue after the moment itself is forgotten. Trait-weighted decay is deferred until residents have traits."
+      references: [episodic-memory, social-consequences, setting-direction]
+
+  - decision: relationships-are-directional-and-multidimensional
+    core:
+      status: accepted
+      confidence: confirmed
+      title: No Single Opinion Number
+      summary: A relationship entry is held by one person about another and scored across eight named dimensions, rather than as one symmetric score. Someone can be respected and disliked at once, and the person who caused offence need hold nothing at all in return. Deltas are authored per event so the arithmetic of a social consequence sits in content next to the prose describing it. Emergent labels read this ledger rather than replacing it.
+      references: [relationship-ledger, relationship-memory-belief-model, social-consequences]
+
+  - decision: invitations-are-delivered-in-person
+    core:
+      status: accepted
+      confidence: confirmed
+      title: An Invitation Arrives at the Door, Not on the Clock
+      summary: The in-world clock sends an inviting neighbour to the household's doorstep; it does not publish the invitation. That happens only when someone talks to them, through the ordinary person affordance. An earlier cut fired NeighbourInvitation directly from the clock, which meant the household learned of the quiz from nobody and the caller was an off-screen name. Nothing is delivered if the door goes unanswered, so the neighbour waiting there is a piece of pressure the player can see.
+      references: [first-friday-invitation, neighbour-caller, person-interaction, world-time]
+
+  - decision: commitments-are-dormant-autonomous-pursuits
+    core:
+      status: accepted
+      confidence: confirmed
+      title: A Commitment Is an Ordinary Intention That Waits
+      summary: Accepting an invitation records a time-bound commitment that sits dormant in the Autonomous band until its hour, then travels to the venue like any other pursuit. It yields to a player order and to an active bodily need rather than overriding them, and it is not cancelled by yielding — it stays held, ready to resume once the queue clears. Attendance is therefore something the household drifts towards under pressure rather than a script that seizes control at the appointed minute.
+      references: [first-friday-invitation, agent-autonomy, action-priority-bands]
+
+  - decision: events-become-per-observer-perceptions
+    core:
+      status: accepted
+      confidence: confirmed
+      title: One Event, Different Perceptions
+      summary: A witnessed event does not produce a single shared record. It forms a distinct perception for each person according to their part in it — the one who sat in the corner seat remembers sitting in it, each co-present witness remembers tutting at it — and separately establishes what the household as a whole now knows. Co-presence is membership of the same authored place. This per-observer shape is what later memories, relationship ledgers, and beliefs attach to, so it is settled before any of them are built.
+      references: [initial-social-consequences, social-consequences, world-events, named-places]
+
+  - decision: right-click-offers-authored-interactions
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Interactions Are Offered, Not Guessed
+      summary: Right-clicking a person or a fixture opens a menu built from that target's authored affordances, titled with its authored display name and labelled with authored verb phrases. The client never invents prose and never picks an interaction on the player's behalf, so what is offered is exactly what the simulation would accept. Right-clicking bare ground remains a move order, and left-click remains household selection. Fixtures authored without affordances are not targets at all.
+      references: [village-client, person-interaction, one-generic-object-use-command, smart-objects]
+
+  - decision: the-camera-cannot-lose-the-village
+    core:
+      status: accepted
+      confidence: confirmed
+      title: The View Always Holds Its Place
+      summary: Switching to a place recentres the camera on it, and panning is bounded so at least one tile of the focused place stays on screen. On an axis where the place already fits in the viewport it is centred rather than allowed to drift into a corner. Places are laid out apart from one another in world space, so without this a player who switched place or panned too far was shown empty sky and had no way to find their way back.
+      references: [village-client, named-places, pixel-art-presentation]
+
+  - decision: use-orders-walk-to-their-fixture
+    core:
+      status: accepted
+      confidence: confirmed
+      title: A Use Order Is Navigate-Then-Use
+      summary: A player use order walks its resident to the fixture's tile and only then claims the slot. The order stays at the head of the resident's queue for the approach, so arriving hands over to the use rather than completing the task, and cancelling during the walk still cancels the order. While the toilet was the only orderable fixture this was invisible; once any authored object became orderable, an unsituated order would have let someone in the cottage be served at the King's Head bar through two walls and a lane. Direct engine requests remain unsituated, so claim-protocol tests can still isolate arbitration from movement.
+      references: [player-command-boundary, tile-navigation, smart-objects, one-generic-object-use-command]
+
+  - decision: initial-needs-and-recipes
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Six Scalar Needs and Data-Defined Cooking
+      summary: Hunger, energy, toilet, hygiene, warmth, and comfort are bounded scalars with individual decay, recovery, and utility curves. Warmth uses per-room ambient state and personal exposure; shower and sink recover hygiene differently; furniture provides comfort. Recipes are first-class assets with ingredients, tools, ordered steps, outputs, and quality. The initial recipe set is tea, toast, and pasta with jarred tomato sauce and optional cheese.
+      references: [agent-autonomy, smart-objects, content-registry]
+
+  - decision: an-initiative-advances-on-conditions-not-a-script
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Stages, Not Steps
+      summary: "An initiative is a graph of stages with authored conditions on the edges, and it moves when a condition is met rather than when a script says so. The alternative — a chain of scripted beats — reads identically the first time and never differs afterwards, which defeats the reason for having village situations at all. It also means neglect is an outcome: a deadline arriving with nothing done resolves the thing just as surely as a campaign does."
+      references: [initiative-system, village-calendar, generic-village-initiatives]
+
+  - decision: nobody-stores-an-opinion-they-were-given
+    core:
+      status: accepted
+      confidence: confirmed
+      title: A Stance Is Derived, Never Assigned
+      summary: "Where somebody stands on a village question is computed from the relationship ledger and the labels they hold, and is never written down as a number some other system set. This keeps one source of truth for what a person thinks, so changing their mind means changing their experience of the people involved rather than setting a field. It also gives the player an honest lever: to swing the licence they must alter what the household make of the landlord, which is the game the social model was built for."
+      references: [initiative-stances, relationship-ledger, emergent-labels]
+
+  - decision: a-role-does-not-suspend-a-person
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Somebody Can Simply Not Turn Up
+      summary: "A role handed out by a coordinator is an ordinary intention competing on the same table as hunger and tiredness, not a command that takes a resident over. A more pressing need therefore wins, and the group effort fails in the ordinary way. A collective action that cannot fail is a cutscene wearing a simulation's clothes, and the memorable version of any village endeavour is the one where somebody got caught up elsewhere."
+      references: [group-activity-coordinators, agent-autonomy, one-scored-set-of-intentions]
+
+  - decision: the-shop-restocks-rather-than-sells
+    core:
+      status: accepted
+      confidence: confirmed
+      title: The Shop Refills the Larder, and No Money Changes Hands
+      summary: "The village shop is modelled as a fixture that restores a named cupboard to authored levels, not as a transaction. The gap it closes is a mechanical one — recipes consumed stock and nothing replenished it — and closing it needs no currency, prices, or shopkeeper inventory. Introducing money to fix an empty larder would drag jobs, wages and pricing in behind it, and those were deferred deliberately. When the economy is built the shop becomes its first customer-facing fixture rather than being rewritten, because what a use does is already authored on the affordance."
+      references: [village-shop, an-affordance-names-the-need-it-answers, future-economy-and-jobs]

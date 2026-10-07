@@ -1,0 +1,341 @@
+{
+  "source_commit": "56950edb09ea0eeb63d9495556600ae91f410473",
+  "tests": [
+    {
+      "name": "in_world_clock_advances_one_minute_per_tick_from_authored_start",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "the_neighbour_calls_round_but_says_nothing_until_spoken_to",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "talking_to_the_neighbour_delivers_the_invitation_exactly_once",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "the_snapshot_withholds_an_outsiders_inner_life",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "the_developer_projection_shows_everyone",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "the_neighbour_takes_no_player_orders",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "the_invitation_commits_the_household_and_they_attend_after_it_starts",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_player_order_takes_precedence_over_the_quiz_commitment",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "time_of_day_maps_and_wraps_across_a_day",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "embedded_content_matches_the_on_disk_fixture",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "cottage_fixture_assigns_readable_definitions_and_monotonic_sim_ids",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "duplicate_initial_placements_are_rejected",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "published_events_are_only_observable_on_the_next_tick",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "fixed_seed_fixture_has_repeatable_seed_derived_events",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_resident_can_travel_from_the_cottage_to_the_kings_head_bar",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_solid_fixture_cannot_be_walked_through_or_stood_on",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "solid_furniture_may_not_block_a_threshold",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "two_residents_travel_to_the_pub_and_contend_for_the_single_bar_slot",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "taking_the_pargeter_seat_while_open_yields_distinct_perceptions_and_knowledge",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_witnessed_slight_is_remembered_and_moves_the_witness_against_the_participant",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_village_saved_mid_plan_reloads_into_the_same_evening",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_save_refuses_content_it_was_not_played_against",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_save_round_trips_through_its_stored_text",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_corrupted_save_is_refused_rather_than_half_loaded",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "the_most_pressing_need_wins_and_then_keeps_its_resident",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_far_more_pressing_need_still_overrides_what_somebody_started",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "an_initiative_is_posted_but_unknown_until_somebody_reads_the_board",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "reading_the_board_is_how_the_household_learn_of_it",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_stance_comes_from_what_somebody_already_holds",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "enough_voices_carry_the_application",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_meeting_nobody_spoke_at_lets_the_application_lapse",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "somebody_hungry_cooks_the_best_thing_the_larder_can_supply",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "an_empty_cupboard_sends_somebody_to_the_next_best_thing",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "cheese_makes_it_a_better_supper",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "an_affordance_answers_the_need_it_declares",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "an_intention_nobody_can_answer_is_refused_at_load",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_label_needs_a_higher_bar_to_apply_than_to_keep",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "one_slight_is_not_enough_but_repetition_settles_into_an_opinion",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "an_opinion_nobody_renews_lifts_on_its_own",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "someone_who_disapproves_of_another_attendee_stands_further_off",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "weighted_decay_never_rounds_a_slow_forgetter_down_to_never",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_moment_passes_while_the_memory_of_it_stays",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_thin_skinned_resident_holds_on_longer_than_a_forgiving_one",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_memory_fades_and_lapses_while_the_standing_it_left_remains",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "taking_the_seat_before_the_pub_opens_carries_no_social_charge",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "go_to_uses_the_paired_stair_portal_and_emits_arrival",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "live_tile_occupancy_waits_without_reserving_future_tiles",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "go_to_replans_when_another_resident_blocks_its_next_step",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "higher_priority_approach_claim_wins_a_shared_live_tile",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "lower_sim_id_wins_an_equal_priority_and_age_shared_live_tile_claim",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "older_approach_claim_wins_a_shared_live_tile_before_sim_id",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "impossible_go_to_emits_a_semantic_failure",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "object_requests_do_not_claim_a_slot_or_capability_before_execution",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "contested_toilet_waits_then_retries_after_execution_releases_claims",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "object_claim_order_is_priority_then_request_age_then_sim_id",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "higher_priority_request_wins_the_same_tick_contention",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "player_command_is_validated_next_tick_and_receipt_is_deferred",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "invalid_player_command_is_rejected_without_claims",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_player_order_accepts_any_authored_affordance",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_player_order_still_rejects_an_affordance_the_object_does_not_have",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "the_household_can_be_ordered_to_use_the_pub_fixtures",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "cancelling_an_active_player_task_releases_claims_without_completion",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "queued_player_task_can_be_cancelled_before_execution",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "autonomous_toilet_need_uses_human_plan_and_recovers_only_on_completion",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "cottage_snapshot_exposes_authoritative_status_for_a_resident_card",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "non_toilet_object_completion_does_not_recover_toilet_need",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "player_toilet_order_suppresses_a_competing_autonomous_request",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "deferred_player_ground_move_uses_the_live_navigation_path",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "toilet_intention_uses_its_own_hysteresis_before_completion_recovers_it",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "cottage_contention_fixture_is_deterministic_and_semantically_complete",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "two_queued_player_orders_execute_in_fifo_order",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_non_head_queued_task_cancels_without_disturbing_the_head",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "cancelling_the_active_head_dispatches_the_next_queued_task",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "urgent_need_preempts_a_player_move_then_resumes_it",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "queue_and_preemption_script_is_deterministic",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "something_that_needs_several_people_hands_out_a_role_each",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_coordinator_arranges_the_thing_once_rather_than_every_tick",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_role_is_something_you_do_rather_than_a_state_you_are_put_into",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "somebody_can_simply_not_turn_up",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "a_full_larder_reads_as_nothing_wanted_and_a_bare_one_as_everything",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "the_counter_fills_the_larder_back_to_its_authored_levels",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "coming_home_with_the_shopping_does_not_throw_out_what_was_there",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "an_empty_larder_is_an_appetite_like_any_other",
+      "implementation": "tests/simulation_tests.gd"
+    },
+    {
+      "name": "somebody_gets_the_shopping_in_without_being_told",
+      "implementation": "tests/simulation_tests.gd"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="VillageAsset" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://sim/village_asset.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+domain = "items"
+data = {"items": [{"id": "item.bread", "display_name": "Bread"}, {"id": "item.teabag", "display_name": "Teabags"}, {"id": "item.milk", "display_name": "Milk"}, {"id": "item.pasta", "display_name": "Pasta"}, {"id": "item.sauce", "display_name": "A jar of tomato sauce"}, {"id": "item.cheese", "display_name": "Cheese"}, {"id": "item.tea", "display_name": "A cup of tea"}, {"id": "item.toast", "display_name": "Toast"}, {"id": "item.supper", "display_name": "A plate of pasta"}]}

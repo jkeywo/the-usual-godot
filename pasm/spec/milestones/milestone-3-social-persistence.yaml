@@ -1,0 +1,132 @@
+entities:
+  - system: milestone-3-social-persistence
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Milestone 3 — Social Persistence
+      summary: Make ordinary interactions accumulate into durable personal and social consequences with knowledge-aware inspection and save/load support.
+      references: [social-memory-and-ledger, belief-and-label-model, knowledge-aware-presentation, active-plan-save-load]
+    implementation:
+      status: declared
+      paths: [sim, client, content/social/outcomes.tres]
+
+  - component: social-memory-and-ledger
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Moments, Memories, and Relationship Ledger
+      summary: Perceived events create temporary moments, episodic memories with salience and trait-weighted decay, and directional relationship entries across affection, trust, respect, comfort, attraction, obligation, grievance, and familiarity.
+      references: [social-consequences, simulation-persistence, episodic-memory, relationship-ledger, temporary-moments, personal-traits]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, content/social/outcomes.tres]
+
+  - component: temporary-moments
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Moments Pass
+      summary: "A perception is first a moment — what somebody is visibly caught up in just now — and it expires after an authored window whether or not anything else happens. The durable record is the memory it leaves behind. Keeping the two apart matters because they answer different questions: a moment says what a person is presently affected by, and a memory says what they will still be carrying this evening. An earlier cut collapsed them, so a perception recorded once stayed on the status card for the rest of the day."
+      references: [episodic-memory, social-consequences, household-knowledge-projection]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, content/social/outcomes.tres]
+
+  - component: personal-traits
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Contrasting Temperaments
+      summary: A person carries authored traits that colour how they take things. The first of them weight forgetting — a thin-skinned resident holds on to a slight well after a forgiving one has let it go — which is what makes the same event land differently on two people rather than merely being recorded twice. Weights are authored integer ratios, never floats, so a save cannot carry a platform-dependent fingerprint. Traits colouring anything beyond memory decay remains later work.
+      references: [episodic-memory, cottage-household, agent-autonomy]
+    implementation:
+      status: declared
+      paths: [sim/content.gd, sim/simulation.gd, content/people/newcomers.tres]
+
+  - component: episodic-memory
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Memories That Fade
+      summary: A perception becomes an episodic memory recording what happened, who it was about, and the tick it formed, carried by a salience that decays every tick until the memory lapses and is dropped. Salience is what makes a slight ordinary rather than permanent — the corner-seat tut is remembered sharply, then less so, then not at all. Decay rates are authored per kind of memory and then weighted by the rememberer's temperament, so the same evening sits differently on two people.
+      references: [social-consequences, world-events, initial-social-consequences]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, content/social/outcomes.tres]
+
+  - component: relationship-ledger
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Directional Relationship Entries
+      summary: What one person holds towards another is a directional entry — the witness thinks less of the participant, while the participant is unaware of it — scored across affection, trust, respect, comfort, attraction, obligation, grievance, and familiarity. Entries accumulate from authored per-event deltas rather than a single opinion number, so two people can hold quite different views of the same evening. Beliefs, emergent labels, and decay of the ledger itself remain later work.
+      references: [social-consequences, episodic-memory, belief-and-label-model]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, sim/content.gd, content/social/outcomes.tres]
+
+  - component: belief-and-label-model
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Evidence-Backed Beliefs and Emergent Labels
+      summary: Beliefs retain evidence, confidence, and trend, and labels emerge directionally through thresholded history with hysteresis rather than a global opinion number. They reach behaviour through one narrow choice — where somebody stands at an event — rather than through utility scoring, which does not exist yet. Weighing a belief against everything else an agent wants waits on agent-autonomy.
+      references: [social-consequences, agent-autonomy, emergent-labels]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, client/main.gd]
+
+  - component: emergent-labels
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Labels Stick, Then Lift
+      summary: A belief accumulates evidence about one person, each item retaining the tick and the perception that produced it, and carries a confidence that rises on new evidence and ebbs with time. A label is applied when confidence crosses an authored entry threshold and removed only when it falls past a lower exit threshold, so nobody acquires and sheds a reputation on alternate ticks at the boundary. Because confidence ebbs, a label lifts of its own accord once nothing renews it, which is what keeps the village forgiving. The trend — whether an opinion is hardening or softening — is recorded alongside, since it is the thing that reads as a person changing their mind.
+      references: [social-consequences, relationship-ledger, episodic-memory]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, content/social/outcomes.tres]
+
+  - component: belief-informed-choice
+    core:
+      status: implemented
+      confidence: confirmed
+      title: A Belief That Changes Something
+      summary: A resident who holds a disapproving label about someone else takes it into account when settling where to stand at an event, choosing a spot further from them than they otherwise would. It is one deliberately narrow choice rather than a scoring system, because there is no utility scorer yet to weigh a belief against everything else an agent wants. General belief influence over intention scoring waits on agent-autonomy; what this proves is that the belief reaches behaviour at all, rather than only reaching the interface.
+      references: [emergent-labels, agent-autonomy, first-friday-invitation]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd]
+
+  - component: knowledge-aware-presentation
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Household-Knowledge UI
+      summary: The player sees household state fully but only observes, hears, or infers NPC facts. A separate developer mode may expose omniscient simulation state.
+      references: [village-client, social-consequences, household-knowledge-projection]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, client/main.gd]
+
+  - component: household-knowledge-projection
+    core:
+      status: implemented
+      confidence: confirmed
+      title: A Snapshot That Cannot Leak
+      summary: The read model carries a resident's private state — needs, intentions, orders, moments, memories — in an optional block that is present for the household and absent for everyone else. Someone outside the household projects their name, where they are, and what the household witnessed of them, and nothing more. The boundary is structural rather than a rule the client is trusted to follow, so there is no field to read carelessly. A separate developer projection fills the same block for everyone; it is a distinct method rather than a flag, so the ordinary path has no branch that could be taken wrongly.
+      references: [village-client, social-consequences, player-command-boundary]
+    implementation:
+      status: declared
+      paths: [sim/simulation.gd, client/main.gd]
+
+  - component: active-plan-save-load
+    core:
+      status: implemented
+      confidence: confirmed
+      title: Active Plan Persistence
+      summary: "Saving mid-plan preserves the in-flight walk, the player queue behind it, live slot and capability claims, commitments, moments, memories, relationships, beliefs, and the event ledger; restoring resumes the same evening rather than merely the same instant. The record is a vellum-save Progress envelope carrying runtime state against a digest of the authored content, so a save made against a different village is refused. Deterministic continuation is testable cheaply here because the keyed draw is a pure function of seed, tick, event and purpose, leaving no random-number cursor to restore wrongly."
+      references: [simulation-persistence, agent-autonomy, saves-store-runtime-state-against-a-content-digest]
+    implementation:
+      status: declared
+      paths: [sim/save.gd, client/main.gd, project.godot]
