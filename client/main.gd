@@ -95,6 +95,9 @@ func run_acceptance_tests() -> void:
 			true
 		)
 	else:
+		sound.stop()
+		sound.stream = null
+		await get_tree().create_timer(0.25).timeout
 		get_tree().quit(
 			0 if result.failures.is_empty() and result.missing_source_tests.is_empty() else 1
 		)
@@ -322,7 +325,7 @@ func responsive_layout() -> void:
 
 
 func click_sound() -> void:
-	if sound != null and not muted:
+	if sound != null and not muted and DisplayServer.get_name() != "headless":
 		sound.pitch_scale = randf_range(0.94, 1.06)
 		sound.play()
 
