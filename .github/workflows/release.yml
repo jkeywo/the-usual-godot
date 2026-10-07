@@ -1,0 +1,32 @@
+name: Publish verified Windows release
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Successful Godot CI run containing the Windows artifact
+        required: true
+        type: string
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download verified build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN: ${{ inputs.run_id }}
+        run: |
+          test "$(gh run view "$SOURCE_RUN" --json conclusion --jq .conclusion)" = success
+          gh run download "$SOURCE_RUN" -n windows -D release
+          cd release
+          zip TheUsual-Windows-x64.zip TheUsual.exe
+          sha256sum TheUsual-Windows-x64.zip > SHA256SUMS.txt
+      - name: Publish Windows download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload v0.1.0-godot release/TheUsual-Windows-x64.zip release/SHA256SUMS.txt --clobber
+          gh release edit v0.1.0-godot --draft=false
