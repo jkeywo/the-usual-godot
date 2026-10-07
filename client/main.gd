@@ -22,6 +22,7 @@ var needs_box: VBoxContainer
 var orders_box: VBoxContainer
 var memories_box: VBoxContainer
 var feed: RichTextLabel
+var viewport_panel: PanelContainer
 var details: PanelContainer
 var feed_panel: PanelContainer
 var place_picker: OptionButton
@@ -209,9 +210,7 @@ func build_ui() -> void:
 		toolbar.add_child(rate_button)
 	toolbar.add_child(button(tr_text("save"), save_evening))
 	toolbar.add_child(button(tr_text("load"), load_evening))
-	details_button = button(
-		tr_text("details_toggle"), func() -> void: details.visible = not details.visible
-	)
+	details_button = button(tr_text("details_toggle"), toggle_details)
 	toolbar.add_child(details_button)
 	toolbar.add_child(
 		button(tr_text("feed_toggle"), func() -> void: feed_panel.visible = not feed_panel.visible)
@@ -221,7 +220,7 @@ func build_ui() -> void:
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_theme_constant_override("separation", 12)
 	layout.add_child(body)
-	var viewport_panel := panel()
+	viewport_panel = panel()
 	viewport_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	body.add_child(viewport_panel)
 	var world_column := VBoxContainer.new()
@@ -321,7 +320,14 @@ func responsive_layout() -> void:
 		details.visible = not narrow
 		feed_panel.visible = not narrow
 	details_button.visible = narrow
-	details.custom_minimum_size.x = mini(300, size.x * 0.42)
+	details.custom_minimum_size.x = 300
+	details.size_flags_horizontal = Control.SIZE_EXPAND_FILL if narrow else Control.SIZE_FILL
+	viewport_panel.visible = not (narrow and details.visible)
+
+
+func toggle_details() -> void:
+	details.visible = not details.visible
+	responsive_layout()
 
 
 func click_sound() -> void:

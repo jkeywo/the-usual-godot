@@ -695,6 +695,32 @@ func test_saves() -> void:
 			advance(restored, 20)
 		check("resume_" + str(tick), restored != null and restored.state == sim.state)
 
+	for scenario: String in ["movement", "contention", "cooking", "urgent", "initiative"]:
+		sim = fresh()
+		if scenario == "movement" or scenario == "urgent":
+			sim.submit_player_command(VillageCommand.go_to(101, 1, tile(0, 4, 1)))
+		elif scenario == "contention":
+			sim.submit_player_command(VillageCommand.use_object(101, 1, TOILET, USE))
+			sim.submit_player_command(VillageCommand.use_object(102, 2, TOILET, USE))
+		elif scenario == "cooking":
+			sim.state.residents[1].needs.Hunger.value = 90
+		elif scenario == "initiative":
+			advance(sim, 190)
+		sim.advance_tick()
+		if scenario == "urgent":
+			sim.state.residents[1].needs.Toilet.value = 95
+			sim.advance_tick()
+		for checkpoint: int in 15:
+			restored = VillageSave.decode(VillageSave.encode(sim), content)
+			var valid: bool = restored != null
+			if valid:
+				var uninterrupted := VillageSave.decode(VillageSave.encode(sim), content)
+				advance(restored, 30)
+				advance(uninterrupted, 30)
+				valid = restored.state == uninterrupted.state
+			check("save_" + scenario + "_" + str(checkpoint), valid)
+			sim.advance_tick()
+
 
 func test_validation() -> void:
 	var changed := VillageContent.load_default()
@@ -721,6 +747,25 @@ func test_validation() -> void:
 
 func test_reference() -> void:
 	var sim := fresh()
+	for tick: int in 241:
+		if tick in [0, 1, 2, 10, 30, 60, 120, 240]:
+			var reference: Dictionary = integer_values(
+				JSON.parse_string(
+					FileAccess.get_file_as_string("res://tests/reference/autonomous_%d.json" % tick)
+				)
+			)
+			var matches: bool = sim.state.tick == reference.tick
+			for resident: Dictionary in reference.residents:
+				matches = matches and sim.state.residents[resident.id].position == resident.position
+			for need: Array in reference.needs:
+				for field: String in need[2]:
+					matches = (
+						matches
+						and sim.state.residents[need[0]].needs[need[1]][field] == need[2][field]
+					)
+			check("rust_snapshot_" + str(tick), matches)
+		sim.advance_tick()
+	sim = fresh()
 	advance(sim, 240)
 	check(
 		"rust_autonomous_240_tick_trace",
