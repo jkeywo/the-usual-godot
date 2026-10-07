@@ -338,6 +338,13 @@ func finish_task(who: int, task: int, status: String) -> void:
 		state.queues.erase(who)
 
 
+func release_walk(who: int) -> void:
+	state.walks.erase(who)
+	for portal: String in keys(state.portals):
+		if state.portals[portal] == who:
+			state.portals.erase(portal)
+
+
 func release_use(who: int) -> Dictionary:
 	var active: Dictionary = state.uses.get(who, {})
 	if not active.is_empty():
@@ -354,6 +361,15 @@ func ingest_commands() -> void:
 		var reason := ""
 		if c.kind == VillageCommand.Kind.CANCEL:
 			cancel_task(c.task)
+			continue
+		if (
+			c.kind
+			in [VillageCommand.Kind.PROMOTE, VillageCommand.Kind.FORCE, VillageCommand.Kind.REORDER]
+		):
+			manage_task(c)
+			continue
+		if c.kind not in [VillageCommand.Kind.GO_TO, VillageCommand.Kind.USE_OBJECT]:
+			emit("PlayerCommandRejected", {"task": c.task, "reason": "InvalidCommand"})
 			continue
 		if state.tasks.has(c.task):
 			reason = "DuplicateTask"
@@ -394,7 +410,7 @@ func cancel_task(task: int) -> void:
 			var walking: Dictionary = state.walks.get(who, {})
 			var was_walking: bool = walking.get("task", 0) == task
 			if was_walking:
-				state.walks.erase(who)
+				release_walk(who)
 			if state.uses.get(who, {}).get("task", 0) == task:
 				release_use(who)
 			state.requests = state.requests.filter(
@@ -416,6 +432,60 @@ func cancel_task(task: int) -> void:
 					{"task": task, "resident": who, "object": c.object, "affordance": c.affordance}
 				)
 			return
+
+
+func manage_task(command: Dictionary) -> void:
+	var reason: String = (
+		"UnknownTask" if not state.tasks.has(command.task) else "TaskNotCancellable"
+	)
+	for who: int in keys(state.queues):
+		var queue: Array = state.queues[who]
+		var source: int = -1
+		for i: int in queue.size():
+			if queue[i].task == command.task:
+				source = i
+		if source < 0:
+			continue
+		var head: int = queue[0].task
+		var active: bool = (
+			state.tasks[head] in ["Active", "Paused"]
+			or state.requests.any(func(r: Dictionary) -> bool: return r.task == head)
+		)
+		var first: int = 1 if active else 0
+		var target: int = first
+		if command.kind == VillageCommand.Kind.REORDER:
+			target = command.get("queue_index", -1)
+		if (
+			command.kind != VillageCommand.Kind.FORCE
+			and (source < first or target < first or target >= queue.size())
+		):
+			reason = "InvalidQueuePosition"
+			break
+		var task: Dictionary = queue[source]
+		if command.kind == VillageCommand.Kind.FORCE:
+			pause_head(who)
+			if state.plans.get(who, {}).get("band", 0) < 2000:
+				if state.walks.get(who, {}).get("task", -1) == 0:
+					release_walk(who)
+				if state.uses.get(who, {}).get("task", -1) == 0:
+					release_use(who)
+				state.requests = state.requests.filter(
+					func(r: Dictionary) -> bool: return r.resident != who or r.task != 0
+				)
+				if state.plans.has(who) and not state.plans[who].frames.is_empty():
+					state.plans[who].frames[-1].flight = false
+			task.priority = 500
+			task.forced = true
+			target = 0
+		queue.remove_at(source)
+		queue.insert(target, task)
+		emit("PlayerCommandAccepted", {"task": command.task, "operation": command.kind})
+		emit(
+			"PlayerQueueChanged",
+			{"task": command.task, "resident": who, "operation": command.kind, "index": target}
+		)
+		return
+	emit("PlayerCommandRejected", {"task": command.task, "reason": reason})
 
 
 func dispatch_queues() -> void:
@@ -812,7 +882,7 @@ func run_autonomy() -> void:
 func pause_head(who: int) -> void:
 	var task: int = state.walks.get(who, {}).get("task", 0)
 	if task != 0:
-		state.walks.erase(who)
+		release_walk(who)
 		state.tasks[task] = "Paused"
 		return
 	task = state.uses.get(who, {}).get("task", 0)
@@ -834,7 +904,7 @@ func advance_plan(who: int) -> void:
 	if not state.queues.get(who, []).is_empty():
 		if p.band != 2000:
 			if state.walks.has(who) and state.walks[who].task == 0:
-				state.walks.erase(who)
+				release_walk(who)
 				if not p.frames.is_empty():
 					p.frames[-1].flight = false
 			return
@@ -1233,7 +1303,9 @@ func project(developer: bool) -> Dictionary:
 			"definition_id": r.definition_id,
 			"display_name": definitions[r.definition_id].display_name,
 			"position": r.position.duplicate(),
-			"household": r.household
+			"household": r.household,
+			"activity":
+			"walking" if state.walks.has(who) else state.uses.get(who, {}).get("affordance", "idle")
 		}
 		if r.household or developer:
 			var tasks: Array = state.queues.get(who, []).duplicate(true)
@@ -1271,7 +1343,7 @@ func events_since(cursor: int, developer: bool = false) -> Dictionary:
 		if event.kind == "TickCompleted":
 			continue
 		var data: Dictionary = event.data
-		var allowed: bool = developer
+		var allowed: bool = developer or event.kind == "PlayerCommandRejected"
 		if data.has("task") and state.tasks.has(data.task):
 			allowed = true
 		for field: String in ["resident", "cook", "eater", "shopper", "participant"]:

@@ -90,6 +90,8 @@ func run() -> Dictionary:
 	test_saves()
 	test_validation()
 	test_reference()
+	OrderTests.run(self)
+	DifferentialTests.run(self)
 	return report()
 
 

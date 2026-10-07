@@ -29,7 +29,7 @@ jobs:
       - run: uv run pasm validate pasm/spec
       - run: uv run pasm scan pasm/spec --json
       - run: uv run python tools/check_architecture.py
-      - run: uv run python tools/run_checked.py "${{ steps.godot.outputs.godot }}" --headless --editor --path . --import
+      - run: uv run python tools/run_checked.py "${{ steps.godot.outputs.godot }}" --headless --editor --path . --import --quit
       - run: uv run python tools/run_checked.py "${{ steps.godot.outputs.godot }}" --headless --path . --script tests/run.gd
       - run: uv run python tools/run_checked.py "${{ steps.godot.outputs.godot }}" --headless --path . --quit-after 240 -- --test-suite
       - run: mkdir -p build/windows build/web

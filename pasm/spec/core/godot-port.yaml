@@ -46,3 +46,19 @@ entities:
       summary: "User-authorized replacement of the boxed dashboard layout: the simulation occupies the full window, with toolbar, resident details, household portraits and village feed floating above it. Supersedes the spatial layout of godot-household-dashboard while preserving its controls."
       rationale: ["[ai] Only visible HUD panels intercept pointer input; opening drawers never resizes or hides the simulation viewport."]
       references: [godot-household-dashboard, village-client]
+
+  - decision: godot-order-management-completion
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Complete household order management
+      summary: "User-authorized completion of promotion, force and reordering. Existing baseline commands retain their behavior; new commands validate at the next tick and persist with the queue."
+      rationale:
+        - "[ai] Promotion selects the next waiting job without interrupting the active head. Reordering cannot displace an active or urgent-paused head. Do now interrupts household work at the tick boundary, preserves the displaced task, and raises the selected task within the Player band; Urgent still outranks it."
+        - "[ai] Save format 2 records the extended command vocabulary. The reader continues to accept format 1; malformed queue state is rejected before replacing the world."
+        - "[ai] Animation and event-based sound remain client-only. Observable activity may be projected, but outsider needs and intentions remain private."
+        - "[ai] Multi-seed scripted reference runs supplement the original 84 behavior checks; tests explicitly cover all new commands and save/resume transitions."
+      references: [godot-native-port, action-priority-bands, player-command-boundary, godot-parity-and-model-gates]
+    implementation:
+      status: declared
+      paths: [sim/command.gd, sim/simulation.gd, client/main.gd, client/village_view.gd, tests/order_tests.gd, tests/differential_tests.gd]

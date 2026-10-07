@@ -1,7 +1,7 @@
 class_name VillageCommand
 extends RefCounted
 
-enum Kind { GO_TO, USE_OBJECT, CANCEL }
+enum Kind { GO_TO, USE_OBJECT, CANCEL, PROMOTE, FORCE, REORDER }
 var kind: Kind = Kind.GO_TO
 var task: int = 0
 var resident: int = 0
@@ -9,10 +9,11 @@ var destination: Dictionary = {}
 var object: String = ""
 var affordance: String = ""
 var priority: int = 0
+var queue_index: int = 0
 
 
 func to_data() -> Dictionary:
-	return {
+	var data := {
 		"kind": kind,
 		"task": task,
 		"resident": resident,
@@ -21,6 +22,9 @@ func to_data() -> Dictionary:
 		"affordance": affordance,
 		"priority": priority
 	}
+	if kind == Kind.REORDER:
+		data.queue_index = queue_index
+	return data
 
 
 static func go_to(id: int, who: int, tile: Dictionary, weight: int = 0) -> VillageCommand:
@@ -46,4 +50,11 @@ static func cancel(id: int) -> VillageCommand:
 	var c := VillageCommand.new()
 	c.kind = Kind.CANCEL
 	c.task = id
+	return c
+
+
+static func manage(id: int, operation: Kind, index: int = 0) -> VillageCommand:
+	var c := cancel(id)
+	c.kind = operation
+	c.queue_index = index
 	return c

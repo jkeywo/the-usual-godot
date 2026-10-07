@@ -13,11 +13,24 @@ The acceptance suite maps all 84 baseline simulation behavior tests, compares
 three independent Rust event traces and eight authoritative state checkpoints,
 and checks unsigned mixer vectors. The state comparisons include positions,
 needs, navigation paths, plans, active uses, stocks, claims and pending events.
-There are 205 simulation checks and 19 client checks, including 75 save/resume
+There are 540 simulation checks and 42 client checks, including 75 save/resume
 checkpoints for movement, contention, cooking, urgent preemption and initiatives.
+An additional independent matrix runs autonomous and scripted scenarios for 600
+ticks at each of six seeds (0, 1, 42, 4243, i64::MAX and u64::MAX). All twelve
+full event traces and 300 normalized authoritative checkpoints match the Rust
+baseline. Normalization covers plans, queues, movement, uses, claims, needs,
+stocks, social state and pending events. These are finite regression scenarios,
+not a proof of equivalence for every possible playthrough.
+
+The reproducible Rust exporter is `tools/reference_matrix.rs`; append it to the
+baseline's simulation tests in an isolated checkout, run `cargo test -p village_sim export_godot_matrix`
+with `GODOT_FIXTURES` set to this port's `.reference/matrix` directory, then normalize with
+`tools/normalize_matrix.py`. The committed fixtures require no Rust toolchain.
+New queue-management behavior has dedicated GDScript semantic tests because the
+baseline did not implement these commands.
 
 The same suite runs headlessly and in the browser export. CI verifies browser
-persistence after reload, captures wide and narrow screenshots, and runs the
+persistence after reload and audio after a real user gesture, captures wide and narrow screenshots, and runs the
 exported executable on Windows before deploying GitHub Pages. Every release is
 built with the pinned editor and matching SHA512-verified templates.
 
@@ -32,3 +45,21 @@ client access to mutable simulation state. This does not modify vellum.
 The initial port keeps the simulation's phase methods together to permit direct
 comparison with the Rust baseline. GDScript lint limits explicitly accommodate
 that parity boundary; extraction can follow once behavior is established.
+
+## Completed client gaps
+
+The simulation fills the window behind a floating, responsive HUD. Orders expose
+Next (promote behind current work), Do now (interrupt and preserve current work),
+Up/Down (reorder waiting jobs) and Cancel. Urgent needs still outrank forced player
+work. Receipts distinguish pending, accepted and rejected operations, with reasons;
+waiting and cancellation messages describe what happened. Doors and stairs expose
+their authored crossing actions. Selecting an outsider clears household details.
+
+Client-only walk, work, rest and idle poses accompany original synthesized effect
+cues and quiet ambience. Sound starts after a user gesture and can be muted.
+`tools/generate_presentation.py` reproduces the original media; provenance is in
+`assets/PROVENANCE.md`. New saves use version 2 and retain version 1 read support.
+Malformed state, integrity failures and content mismatches leave the world intact.
+
+The roadmap's deferred systems, including a household economy, remain outside
+this migration. No new economic mechanics were added while closing client gaps.

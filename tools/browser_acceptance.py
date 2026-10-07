@@ -4,6 +4,7 @@ import http.server
 import json
 import threading
 import shutil
+import os
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -12,13 +13,17 @@ server = http.server.ThreadingHTTPServer(("127.0.0.1", 8765), handler)
 threading.Thread(target=server.serve_forever, daemon=True).start()
 try:
     with sync_playwright() as p:
-        browser = p.chromium.launch(executable_path=shutil.which("google-chrome"), args=["--enable-webgl", "--use-gl=angle", "--use-angle=swiftshader"])
+        browser = p.chromium.launch(executable_path=os.environ.get("CHROME_BIN") or shutil.which("google-chrome"), args=["--enable-webgl", "--use-gl=angle", "--use-angle=swiftshader"])
         page = browser.new_page(viewport={"width": 1280, "height": 800})
         errors = []
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.goto("http://127.0.0.1:8765/?test")
         page.wait_for_function("window.__usualTests !== undefined", timeout=120000)
         report = page.evaluate("window.__usualTests")
+        assert page.get_attribute("body", "data-audio-unlocked") is None
+        page.locator("canvas").click(position={"x": 350, "y": 80})
+        page.wait_for_function("document.body.getAttribute('data-audio-unlocked') === 'true'")
+        page.wait_for_function("document.body.getAttribute('data-audio-playing') === 'true'")
         assert not report["failures"] and not report["missing_source_tests"], report
         page.wait_for_timeout(1500)  # Allow the browser filesystem's asynchronous IndexedDB flush.
         page.goto("http://127.0.0.1:8765/?persist")

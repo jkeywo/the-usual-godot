@@ -19,6 +19,8 @@ var drag_origin := Vector2.ZERO
 var drag_distance: float = 0.0
 var textures: Dictionary = {}
 var fingers: Dictionary = {}
+var animation_time: float = 0.0
+var facing: Dictionary = {}
 
 
 func _ready() -> void:
@@ -27,6 +29,10 @@ func _ready() -> void:
 	resized.connect(constrain_pan)
 	for i: int in range(1, 5):
 		textures["resident_" + str(i)] = load("res://assets/original/resident_%d.svg" % i)
+		for pose: String in ["walk0", "walk1", "work0", "work1", "sit", "sleep", "blink"]:
+			textures["resident_%d_%s" % [i, pose]] = load(
+				"res://assets/original/resident_%d_%s.svg" % [i, pose]
+			)
 	for key: String in [
 		"toilet",
 		"sink",
@@ -186,6 +192,8 @@ func _draw() -> void:
 			for old: Dictionary in previous.get("residents", []):
 				if old.id == value.id and old.position.place == place:
 					moving = old.position != value.position
+					if old.position.x != value.position.x:
+						facing[value.id] = -1 if old.position.x > value.position.x else 1
 					point = screen_position(old.position).lerp(point, alpha).round()
 			if value.id == selected:
 				draw_arc(
@@ -197,12 +205,34 @@ func _draw() -> void:
 					Color("f8dfa2"),
 					2 * zoom_level
 				)
-			var bob: float = sin(alpha * TAU) * 2 if moving else 0
+			var activity: String = value.get("activity", "idle")
+			var pose: String = animation_pose(activity, animation_time + value.id * 0.17)
+			if moving:
+				pose = "walk" + str(int(animation_time * 7) % 2)
+			var key: String = (
+				"resident_" + str(value.id) + ("_" + pose if not pose.is_empty() else "")
+			)
+			var bob: float = 1.0 if moving and int(animation_time * 7) % 2 == 0 else 0.0
+			var rotation: float = -PI / 2 if pose == "sleep" else 0.0
+			draw_set_transform(point, rotation, Vector2(facing.get(value.id, 1), 1))
 			draw_texture_rect(
-				textures["resident_" + str(value.id)],
-				Rect2(point - Vector2(32, 78 + bob) * zoom_level, Vector2(64, 96) * zoom_level),
+				textures[key],
+				Rect2(-Vector2(32, 78 + bob) * zoom_level, Vector2(64, 96) * zoom_level),
 				false
 			)
+			draw_set_transform(Vector2.ZERO)
+
+
+static func animation_pose(activity: String, elapsed: float) -> String:
+	if activity == "walking":
+		return "walk" + str(int(elapsed * 7) % 2)
+	if "sleep" in activity:
+		return "sleep"
+	if "sit" in activity or "seat" in activity:
+		return "sit"
+	if activity != "idle":
+		return "work" + str(int(elapsed * 3) % 2)
+	return "blink" if fmod(elapsed, 4.0) < 0.15 else ""
 
 
 func interact(point: Vector2, primary: bool) -> bool:
@@ -224,13 +254,35 @@ func interact(point: Vector2, primary: bool) -> bool:
 						return true
 	if primary:
 		return false
-	for object: Dictionary in snapshot.objects:
-		if object.position == tile and not object.affordances.is_empty():
-			target_requested.emit(object, global_position + point)
-			return true
+	var target: Dictionary = context_target(tile)
+	if not target.is_empty():
+		target_requested.emit(target, global_position + point)
+		return true
 	move_requested.emit(tile)
 
 	return true
+
+
+func context_target(tile: Dictionary) -> Dictionary:
+	for object: Dictionary in snapshot.get("objects", []):
+		if object.position == tile and not object.affordances.is_empty():
+			return object.duplicate(true)
+	for portal: Dictionary in snapshot.get("portals", []):
+		if tile == portal.from or tile == portal.to:
+			var from_side: bool = tile == portal.from
+			return {
+				"id": portal.id,
+				"display_name": portal.display_name,
+				"destination": portal.to if from_side else portal.from,
+				"affordances":
+				[
+					{
+						"id": portal.id,
+						"display_name": portal.from_label if from_side else portal.to_label
+					}
+				]
+			}
+	return {}
 
 
 func _gui_input(event: InputEvent) -> void:

@@ -38,6 +38,12 @@ var narrow: bool = false
 var status_signature: String = ""
 var ready_ok: bool = false
 var feed_lines: Array[String] = []
+var pending_operations: Dictionary = {}
+var waiting_messages: Dictionary = {}
+var audio: VillageAudio
+var audio_button: Button
+var footstep_timer: float = 0.0
+var cancelled_work: Dictionary = {}
 
 
 func tr_text(key: String) -> String:
@@ -99,6 +105,7 @@ func run_acceptance_tests() -> void:
 			true
 		)
 	else:
+		audio.stop()
 		sound.stop()
 		sound.stream = null
 		await get_tree().create_timer(0.25).timeout
@@ -223,7 +230,8 @@ func build_ui() -> void:
 	toolbar.add_child(
 		button(tr_text("feed_toggle"), func() -> void: feed_panel.visible = not feed_panel.visible)
 	)
-	toolbar.add_child(button(tr_text("audio"), func() -> void: muted = not muted))
+	audio_button = button(tr_text("audio_on"), toggle_audio)
+	toolbar.add_child(audio_button)
 	hover_label = label(tr_text("day"), 14, Color("b8c0ab"))
 	hover_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	layout.add_child(hover_label)
@@ -290,6 +298,8 @@ func build_ui() -> void:
 	sound.stream = load("res://assets/click-a.ogg")
 	sound.volume_db = -15
 	add_child(sound)
+	audio = VillageAudio.new()
+	add_child(audio)
 	top_hud.resized.connect(responsive_layout)
 	bottom_hud.resized.connect(responsive_layout)
 
@@ -323,15 +333,42 @@ func toggle_details() -> void:
 	responsive_layout()
 
 
+func _input(event: InputEvent) -> void:
+	if audio == null:
+		return
+	if (
+		(event is InputEventMouseButton or event is InputEventScreenTouch or event is InputEventKey)
+		and event.pressed
+	):
+		audio.unlock()
+
+
 func click_sound() -> void:
-	if sound != null and not muted and DisplayServer.get_name() != "headless":
-		sound.pitch_scale = randf_range(0.94, 1.06)
-		sound.play()
+	if audio != null:
+		audio.play("click")
+
+
+func toggle_audio() -> void:
+	muted = not muted
+	audio.set_muted(muted)
+	audio_button.text = tr_text("audio_off" if muted else "audio_on")
 
 
 func _process(delta: float) -> void:
 	if not ready_ok:
 		return
+	view.animation_time += delta * minf(speed, 4)
+	audio.set_place(view.place)
+	footstep_timer += delta
+	if speed > 0 and footstep_timer >= 0.3:
+		footstep_timer = 0
+		for resident: Dictionary in snapshot.residents:
+			if (
+				resident.id == selected
+				and resident.position.place == view.place
+				and resident.get("activity") == "walking"
+			):
+				audio.play("step")
 	accumulator += delta * speed
 	var consumed: int = 0
 	while accumulator >= 0.25 and consumed < 64:
@@ -412,6 +449,12 @@ func refresh_ui() -> void:
 		if r.id == selected:
 			resident = r
 	if resident.is_empty() or not resident.has("private"):
+		name_label.text = resident.get("display_name", tr_text("no_selection"))
+		intention_label.text = tr_text("outsider_card") if not resident.is_empty() else ""
+		clear_box(needs_box)
+		clear_box(orders_box)
+		clear_box(memories_box)
+		status_signature = "!"
 		return
 	name_label.text = resident.display_name
 	var private: Dictionary = resident.private
@@ -453,7 +496,8 @@ func refresh_ui() -> void:
 			var empty := label(tr_text("empty_orders"), 16)
 			empty.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			orders_box.add_child(empty)
-		for task: Dictionary in private.player_tasks:
+		for index: int in private.player_tasks.size():
+			var task: Dictionary = private.player_tasks[index]
 			var row := VBoxContainer.new()
 			orders_box.add_child(row)
 			var name: String = (
@@ -464,7 +508,33 @@ func refresh_ui() -> void:
 			var title := label(strings.states[task.status] + " · " + name, 16)
 			title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			row.add_child(title)
-			row.add_child(button(tr_text("cancel"), cancel_order.bind(task.task)))
+			var actions := HFlowContainer.new()
+			row.add_child(actions)
+			var promote_button := button(
+				tr_text("promote"), manage_order.bind(task.task, VillageCommand.Kind.PROMOTE, 0)
+			)
+			promote_button.disabled = index < 1
+			promote_button.tooltip_text = tr_text("promote_hint")
+			actions.add_child(promote_button)
+			var force_button := button(
+				tr_text("force"), manage_order.bind(task.task, VillageCommand.Kind.FORCE, 0)
+			)
+			force_button.disabled = index == 0 and task.status == "Active"
+			force_button.tooltip_text = tr_text("force_hint")
+			actions.add_child(force_button)
+			for direction: int in [-1, 1]:
+				var move_button := button(
+					tr_text("move_up" if direction < 0 else "move_down"),
+					manage_order.bind(task.task, VillageCommand.Kind.REORDER, index + direction)
+				)
+				move_button.disabled = (
+					index == 0
+					or index + direction < 1
+					or index + direction >= private.player_tasks.size()
+				)
+				move_button.tooltip_text = tr_text("reorder_hint")
+				actions.add_child(move_button)
+			actions.add_child(button(tr_text("cancel"), cancel_order.bind(task.task)))
 
 	clear_box(memories_box)
 	var texts: Array[String] = []
@@ -509,7 +579,7 @@ func select_resident(id: int) -> void:
 
 
 func queue_move(tile: Dictionary) -> void:
-	simulation.submit_player_command(VillageCommand.go_to(next_task, selected, tile))
+	submit_order(VillageCommand.go_to(next_task, selected, tile), "accepted")
 	next_task += 1
 	receipt.text = tr_text("pending")
 	click_sound()
@@ -528,10 +598,14 @@ func open_menu(target: Dictionary, point: Vector2) -> void:
 func menu_action(index: int) -> void:
 	if index < 0 or index >= menu_target.affordances.size():
 		return
-	simulation.submit_player_command(
+	if menu_target.has("destination"):
+		queue_move(menu_target.destination)
+		return
+	submit_order(
 		VillageCommand.use_object(
 			next_task, selected, menu_target.id, menu_target.affordances[index].id
-		)
+		),
+		"accepted"
 	)
 	next_task += 1
 	receipt.text = tr_text("pending")
@@ -559,22 +633,52 @@ func consume_feedback() -> void:
 	event_cursor = batch.cursor
 	for event: Dictionary in batch.events:
 		if event.kind == "PlayerCommandAccepted":
-			receipt.text = tr_text("accepted")
+			var operations: Array = pending_operations.get(event.data.task, [])
+			if operations.is_empty() or event.tick <= operations[0].tick:
+				continue
+			receipt.text = tr_text(
+				operations.pop_front().feedback if not operations.is_empty() else "accepted"
+			)
+			audio.play("accept")
 			continue
 		if event.kind == "PlayerCommandRejected":
-			receipt.text = tr_text("rejected")
-			continue
-		if event.kind in ["GoToWaited", "ObjectUseWaited", "NeedRecovered"]:
+			var operations: Array = pending_operations.get(event.data.task, [])
+			if not operations.is_empty():
+				operations.pop_front()
+			receipt.text = (
+				tr_text("rejected") + " " + strings.rejection_reasons.get(event.data.reason, "")
+			)
+			audio.play("reject")
 			continue
 		var text: String = strings.events.get(event.kind, "")
 		var who: int = event.data.get(
 			"resident",
 			event.data.get("cook", event.data.get("eater", event.data.get("shopper", 0)))
 		)
+		if event.kind in ["GoToWaited", "ObjectUseWaited"]:
+			var key: String = event.kind + str(event.data.get("object", ""))
+			if waiting_messages.get(who) == key:
+				continue
+			waiting_messages[who] = key
+		elif who != 0:
+			waiting_messages.erase(who)
+		text = text.replace(
+			"{need}", strings.need_labels.get(event.data.get("need", ""), tr_text("needs"))
+		)
 		text = text.replace("{name}", resident_name(who))
 		text = text.replace(
 			"{action}", action_name(event.data.get("object", ""), event.data.get("affordance", ""))
 		)
+		if event.kind in ["GoToCancelled", "TaskCancelled"]:
+			if cancelled_work.get(event.data.get("task", 0), false):
+				text = tr_text("queued_cancelled").replace("{name}", resident_name(who))
+			cancelled_work.erase(event.data.get("task", 0))
+			receipt.text = text
+			audio.play("cancel")
+		elif event.kind in ["ObjectUseCompleted", "GoToArrived"]:
+			audio.play("complete")
+		elif event.kind in ["NeighbourInvitation", "InitiativeMoved", "NoticeRead"]:
+			audio.play("notice")
 		if not text.is_empty():
 			feed_lines.append(text)
 			if feed_lines.size() > 60:
@@ -602,6 +706,9 @@ func load_evening() -> void:
 	next_task = simulation.next_player_task_id()
 	status_signature = "!"
 	feed_lines.clear()
+	pending_operations.clear()
+	cancelled_work.clear()
+	waiting_messages.clear()
 	feed.text = ""
 	view.set_snapshot(snapshot, previous)
 	refresh_ui()
@@ -623,5 +730,28 @@ func select_and_follow(id: int) -> void:
 
 
 func cancel_order(task: int) -> void:
-	simulation.submit_player_command(VillageCommand.cancel(task))
+	for resident: Dictionary in snapshot.residents:
+		for queued: Dictionary in resident.get("private", {}).get("player_tasks", []):
+			if queued.task == task:
+				cancelled_work[task] = queued.status == "Queued"
+	submit_order(VillageCommand.cancel(task), "cancel_accepted")
+	receipt.text = tr_text("pending")
+
+
+func submit_order(command: VillageCommand, feedback: String) -> void:
+	if not pending_operations.has(command.task):
+		pending_operations[command.task] = []
+	pending_operations[command.task].append(
+		{"feedback": feedback, "tick": simulation.cottage_snapshot().tick}
+	)
+	simulation.submit_player_command(command)
+
+
+func manage_order(task: int, operation: VillageCommand.Kind, index: int) -> void:
+	var feedback: String = "reorder_accepted"
+	if operation == VillageCommand.Kind.PROMOTE:
+		feedback = "promote_accepted"
+	elif operation == VillageCommand.Kind.FORCE:
+		feedback = "force_accepted"
+	submit_order(VillageCommand.manage(task, operation, index), feedback)
 	receipt.text = tr_text("pending")

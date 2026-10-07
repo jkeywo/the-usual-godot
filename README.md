@@ -12,11 +12,15 @@ whose presence matters. Native GDScript port of
 Open `project.godot` in **Godot 4.7.2**, standard edition. No Rust runtime,
 GDExtension, or source asset purchase is required. Content is authored as Godot
 text resources. The original replacement SVG artwork is included under MIT;
-font and interface sounds are CC0 (see `assets/PROVENANCE.md`).
+the font and retained source sounds are CC0. New animated poses and synthesized
+audio are original project assets (see `assets/PROVENANCE.md`).
 
 Left-click selects a household member. Right-click a fixture/person for its
 authored actions, or bare ground to queue a walk. Drag to pan; wheel/+/- to zoom.
-The dashboard shows needs, queued orders, memories and village news.
+The floating dashboard shows needs, queued orders, memories and village news.
+Use Next to promote a waiting order, Do now to interrupt current work, Up/Down
+to reorder, or Cancel. Urgent needs still take precedence. Sound begins after
+interaction and can be muted with the toolbar.
 Space pauses; 1/2 or Tab select residents; F toggles follow; brackets change
 place; F3 toggles the developer view; F5/F9 save/load. Touch supports tap and drag.
 Save/load buttons work in browsers where function keys are reserved.
@@ -28,7 +32,7 @@ filesystem; the UI reports failures instead of claiming a successful save.
 ## Check
 
 ```text
-godot --headless --editor --path . --import
+godot --headless --editor --path . --import --quit
 godot --headless --path . --script tests/run.gd
 uv run pasm validate pasm/spec
 uv run pasm scan pasm/spec --json
@@ -50,6 +54,8 @@ uv sync --frozen --group dev
 uv run python tools/setup_godot.py
 ```
 
-The source checks, client acceptance tests and three independent Rust event
-traces run on Windows and in the exported browser build. CI also reloads the
-browser to verify persistence and captures desktop/narrow-layout screenshots.
+All 540 simulation checks and 42 client checks run on Windows and in the
+exported browser build, including twelve additional 600-tick Rust reference
+runs across six seeds and 300 authoritative checkpoints. CI also verifies
+browser persistence after reload and audio after user interaction, and captures
+desktop/narrow-layout screenshots.
