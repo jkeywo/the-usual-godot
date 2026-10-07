@@ -107,16 +107,8 @@ func switch_place(index: int) -> void:
 func constrain_pan() -> void:
 	var bounds := map_size()
 	var margin: float = 32 * zoom_level
-	pan.x = (
-		0
-		if bounds.x <= size.x
-		else clampf(pan.x, -(bounds.x + size.x) * 0.5 + margin, (bounds.x + size.x) * 0.5 - margin)
-	)
-	pan.y = (
-		0
-		if bounds.y <= size.y
-		else clampf(pan.y, -(bounds.y + size.y) * 0.5 + margin, (bounds.y + size.y) * 0.5 - margin)
-	)
+	pan.x = (clampf(pan.x, -(bounds.x + size.x) * 0.5 + margin, (bounds.x + size.x) * 0.5 - margin))
+	pan.y = (clampf(pan.y, -(bounds.y + size.y) * 0.5 + margin, (bounds.y + size.y) * 0.5 - margin))
 	pan = pan.round()
 	queue_redraw()
 

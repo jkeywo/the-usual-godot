@@ -13,7 +13,7 @@ The acceptance suite maps all 84 baseline simulation behavior tests, compares
 three independent Rust event traces and eight authoritative state checkpoints,
 and checks unsigned mixer vectors. The state comparisons include positions,
 needs, navigation paths, plans, active uses, stocks, claims and pending events.
-There are 205 simulation checks and 16 client checks, including 75 save/resume
+There are 205 simulation checks and 19 client checks, including 75 save/resume
 checkpoints for movement, contention, cooking, urgent preemption and initiatives.
 
 The same suite runs headlessly and in the browser export. CI verifies browser

@@ -56,6 +56,7 @@ func _ready() -> void:
 	snapshot = simulation.cottage_snapshot()
 	previous = snapshot.duplicate(true)
 	build_ui()
+	view.zoom_level = 1 if size.x < 900 else 2
 	view.set_snapshot(snapshot, previous)
 	refresh_ui()
 	resized.connect(responsive_layout)
