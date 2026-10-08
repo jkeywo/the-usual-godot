@@ -24,7 +24,7 @@ static func run(game: Control) -> Dictionary:
 	checks.context_menu_uses_authored_actions = (
 		game.menu.get_item_text(1) == target.affordances[0].display_name
 	)
-	game.menu.hide()
+	game.close_menu()
 	game.menu_action(0)
 	checks.orders_are_deferred = (
 		game.simulation.state.tasks.is_empty() and game.simulation.state.inbox.size() == 1
@@ -128,7 +128,7 @@ static func run(game: Control) -> Dictionary:
 		and crossing.affordances[0].display_name == portal.to_label
 	)
 	game.open_menu(crossing, Vector2(100, 100))
-	game.menu.hide()
+	game.close_menu()
 	game.menu_action(0)
 	checks.crossing_submits_typed_move = (
 		game.simulation.state.inbox.back().kind == VillageCommand.Kind.GO_TO
@@ -181,6 +181,7 @@ static func run(game: Control) -> Dictionary:
 	game.view.set_snapshot(game.snapshot, game.previous)
 	AnimationTests.run(game, checks)
 	CameraPortalTests.run(game, checks)
+	HudTests.run(game, checks)
 	var failed: Array[String] = []
 	for name: String in checks:
 		if not checks[name]:

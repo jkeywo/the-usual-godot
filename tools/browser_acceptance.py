@@ -21,7 +21,7 @@ try:
         page.wait_for_function("window.__usualTests !== undefined", timeout=120000)
         report = page.evaluate("window.__usualTests")
         assert page.get_attribute("body", "data-audio-unlocked") is None
-        page.locator("canvas").click(position={"x": 350, "y": 80})
+        page.locator("canvas").click(position={"x": 90, "y": 705})
         page.wait_for_function("document.body.getAttribute('data-audio-unlocked') === 'true'")
         page.wait_for_function("document.body.getAttribute('data-audio-playing') === 'true'")
         assert not report["failures"] and not report["missing_source_tests"], report

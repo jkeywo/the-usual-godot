@@ -79,7 +79,7 @@ Snapshots expose only the position of an object currently being used as
 `activity_target`, detached from the world. This permits visible face-to-face
 conversation gestures without revealing an outsider's needs or future plans.
 Outfit choices are cosmetic client state and are not stored in simulation saves.
-The toolbar switches a selected resident between the original and navy outfit.
+The Menu switches a selected resident between the original and navy outfit.
 
 The rejected procedural SVG character artwork is replaced with generated raster art
 based directly on C — Observational Pixels. See `art/README.md` for prompts,
@@ -92,3 +92,18 @@ Camera follow uses the rendered interpolated position each frame. Manual portal
 orders switch the selected resident's view on arrival even when follow is off,
 and an occupied stair tile retains its crossing menu. `tests/camera_portal_tests.gd`
 checks both floor directions and fractional-tick follow without sim mutations.
+
+## Pixel life HUD
+
+The Sims 3 inspired arrangement uses original blue-grey pixel panels and green
+highlights. Household portraits sit beside the lower-left time dock; a selected
+portrait and tabbed Needs, Orders and On their mind panel span the lower edge.
+Accepted orders remain visible in the upper-left queue with cancellation buttons.
+Authored interactions appear in bubbles around a clicked target, or in a compact
+list on narrow screens. Menu contains saving, loading, clothing and sound controls.
+The village continues to fill the viewport under every panel.
+
+`HouseholdHud` owns construction and responsive placement; `InteractionMenu` owns
+context layout and delegates action submission to the existing typed command path.
+Thirteen HUD checks cover tabs, screen bounds, queue cancellation, retained controls
+and the simulation boundary, bringing client acceptance to 73 checks.

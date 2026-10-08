@@ -54,7 +54,7 @@ static func run(game: Control, checks: Dictionary) -> void:
 	)
 	game.view.set_snapshot(game.snapshot, game.previous)
 	game.open_menu(game.view.context_target(portal.from), Vector2(100, 100))
-	game.menu.hide()
+	game.close_menu()
 	game.menu_action(0)
 	var arrived_up := advance_crossing(game, portal.to)
 	checks.manual_stairs_arrive_upstairs = (
@@ -66,7 +66,7 @@ static func run(game: Control, checks: Dictionary) -> void:
 	# The resident now occupies the stair tile. Right-click must still offer downstairs.
 	game.view.interact(game.view.screen_position(portal.to), false)
 	checks.occupied_stairs_remain_clickable = game.menu_target.get("destination", {}) == portal.from
-	game.menu.hide()
+	game.close_menu()
 	game.menu_action(0)
 	var arrived_down := advance_crossing(game, portal.from)
 	checks.manual_stairs_arrive_downstairs = (

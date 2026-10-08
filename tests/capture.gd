@@ -6,6 +6,9 @@ func _initialize() -> void:
 
 
 func capture() -> void:
+	var width := OS.get_environment("THE_USUAL_CAPTURE_WIDTH")
+	if not width.is_empty():
+		root.size = Vector2i(int(width), int(OS.get_environment("THE_USUAL_CAPTURE_HEIGHT")))
 	var game: Control = load("res://client/main.tscn").instantiate()
 	root.add_child(game)
 	game.speed = 0
@@ -23,6 +26,13 @@ func capture() -> void:
 		game.snapshot = game.simulation.cottage_snapshot()
 		game.view.set_snapshot(game.snapshot, game.previous)
 		game.refresh_ui()
+	game.responsive_layout()
+	if OS.get_environment("THE_USUAL_CAPTURE_MODE") == "menu":
+		game.open_menu(game.view.context_target(game.snapshot.portals[0].from), Vector2(480, 360))
+	elif OS.get_environment("THE_USUAL_CAPTURE_MODE") == "details":
+		game.details.show()
+	elif OS.get_environment("THE_USUAL_CAPTURE_MODE") == "orders":
+		game.detail_tabs.current_tab = 1
 	await process_frame
 	await process_frame
 	await RenderingServer.frame_post_draw

@@ -88,3 +88,17 @@ entities:
     implementation:
       status: declared
       paths: [client/main.gd, client/village_view.gd, tests/camera_portal_tests.gd]
+
+  - decision: godot-pixel-life-hud
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Pixel life-simulation control dock and contextual bubbles
+      summary: "User-authorized Sims 3 inspired pixel HUD layout: vertical household portraits, a visible top-left order queue, lower-left clock and time controls, selected portrait and tabbed information along the bottom, compact world controls and contextual interaction bubbles. Supersedes the spatial arrangement of godot-floating-hud while retaining its full-window village and controls."
+      rationale:
+        - "[ai] Original blue-grey pixel bevels and green accents express the requested layout without importing reference artwork. Needs, orders and household knowledge keep their existing meanings; no new simulation mechanics are introduced."
+        - "[ai] Narrow windows stack the resident bank above a compact time dock; interaction bubbles become a readable vertical list. HUD layout and menu placement remain client-only."
+      references: [godot-floating-hud, authoritative-client-projection, right-click-offers-authored-interactions]
+    implementation:
+      status: declared
+      paths: [client/main.gd, client/household_hud.gd, client/interaction_menu.gd, content/ui.json, tests/client_tests.gd, tests/hud_tests.gd]

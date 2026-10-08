@@ -17,16 +17,20 @@ audio are original project assets (see `assets/PROVENANCE.md`).
 
 Left-click selects a household member. Right-click a fixture/person for its
 authored actions, or bare ground to queue a walk. Drag to pan; wheel/+/- to zoom.
-The floating dashboard shows needs, queued orders, memories and village news.
+The pixel life HUD keeps the village full screen: household portraits stack on the
+left, time controls sit below them, and the selected resident has Needs, Orders
+and On their mind tabs across the bottom. The upper-left action queue shows
+accepted tasks and cancellation buttons; clicked objects open interaction bubbles.
 Use Next to promote a waiting order, Do now to interrupt current work, Up/Down
 to reorder, or Cancel. Urgent needs still take precedence. Sound begins after
-interaction and can be muted with the toolbar. Change clothes swaps the selected
+interaction and can be muted through Menu. Change clothes swaps the selected
 resident between their original outfit and the shared navy outfit. Characters use
 separate heads and outfits, eight-direction walks, conversation gestures and
 interaction animations.
 Space pauses; 1/2 or Tab select residents; F toggles follow; brackets change
 place; F3 toggles the developer view; F5/F9 save/load. Touch supports tap and drag.
-Save/load buttons work in browsers where function keys are reserved.
+Menu contains Save, Load, Change clothes and Sound. These buttons work in
+browsers where function keys are reserved. Narrow screens use a Details drawer.
 
 Saves use a new versioned format and reject corruption or changed content.
 Old Rust saves are not imported. Browser saves use Godot's persistent user
@@ -57,7 +61,7 @@ uv sync --frozen --group dev
 uv run python tools/setup_godot.py
 ```
 
-All 540 simulation checks and 60 client checks run on Windows and in the
+All 540 simulation checks and 73 client checks run on Windows and in the
 exported browser build, including twelve additional 600-tick Rust reference
 runs across six seeds and 300 authoritative checkpoints. CI also verifies
 browser persistence after reload and audio after user interaction, and captures
