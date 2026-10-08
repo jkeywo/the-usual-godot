@@ -27,7 +27,10 @@ var top_hud: PanelContainer
 var bottom_hud: PanelContainer
 var details: PanelContainer
 var feed_panel: PanelContainer
-var place_picker: OptionButton
+var location_label: Label
+var floor_up: Button
+var floor_down: Button
+var village_map: VillageMap
 var follow_button: Button
 var details_button: Button
 var household: BoxContainer
@@ -234,6 +237,8 @@ func responsive_layout() -> void:
 	HouseholdHud.layout(self)
 	if interaction_menu != null:
 		interaction_menu.arrange()
+	if village_map != null:
+		village_map.arrange()
 
 
 func toggle_details() -> void:
@@ -306,7 +311,7 @@ func _process(delta: float) -> void:
 		view.pan -= direction * 400 * delta
 		view.follow = false
 		view.constrain_pan()
-	place_picker.select(place_picker.get_item_index(view.place))
+	village_map.refresh_location()
 	follow_button.set_pressed_no_signal(view.follow)
 
 
@@ -339,6 +344,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		KEY_ESCAPE:
 			close_menu()
 			settings_panel.hide()
+			village_map.hide()
 		KEY_BRACKETLEFT:
 			view.switch_place(posmod(view.place - 1, snapshot.places.size()))
 		KEY_BRACKETRIGHT:

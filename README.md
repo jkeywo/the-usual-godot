@@ -61,8 +61,12 @@ uv sync --frozen --group dev
 uv run python tools/setup_godot.py
 ```
 
-All 540 simulation checks and 73 client checks run on Windows and in the
+All 540 simulation checks and 81 client checks run on Windows and in the
 exported browser build, including twelve additional 600-tick Rust reference
 runs across six seeds and 300 authoritative checkpoints. CI also verifies
 browser persistence after reload and audio after user interaction, and captures
 desktop/narrow-layout screenshots.
+
+The current location appears as text. Arrow icons view another floor when available;
+the folded-map icon opens a clickable village overview. Select a building or its
+label to view that location. These controls change camera focus only.

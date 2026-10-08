@@ -102,3 +102,17 @@ entities:
     implementation:
       status: declared
       paths: [client/main.gd, client/household_hud.gd, client/interaction_menu.gd, content/ui.json, tests/client_tests.gd, tests/hud_tests.gd]
+
+  - decision: godot-village-map-navigation
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Location label, floor controls and clickable village map
+      summary: "User-authorized replacement of the location dropdown with the current location, applicable up/down floor arrows and an icon button opening a clickable village overview."
+      rationale:
+        - "[ai] Authored navigation groups the cottage floors into one map location. Floor and map buttons change camera focus only, disable follow and never move residents or submit simulation commands."
+        - "[ai] An original schematic pixel village uses public location names and authored marker positions, without resident or private information. The responsive overlay supports mouse, touch and keyboard buttons."
+      references: [godot-pixel-life-hud, authoritative-client-projection]
+    implementation:
+      status: declared
+      paths: [client/village_map.gd, client/household_hud.gd, client/main.gd, content/navigation.json, content/ui.json, assets/ui, tests/hud_tests.gd]

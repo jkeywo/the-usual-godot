@@ -8,16 +8,22 @@ static func build(game: Control) -> void:
 	var toolbar := HFlowContainer.new()
 	toolbar.add_theme_constant_override("h_separation", 4)
 	game.top_hud.add_child(toolbar)
-	game.place_picker = OptionButton.new()
-	game.place_picker.custom_minimum_size = Vector2(160, 36)
-	for place: Dictionary in game.snapshot.places:
-		game.place_picker.add_item(place.display_name, place.place)
-	game.place_picker.item_selected.connect(
-		func(index: int) -> void:
-			game.view.switch_place(game.place_picker.get_item_id(index))
-			game.follow_button.set_pressed_no_signal(false)
-	)
-	toolbar.add_child(game.place_picker)
+	game.location_label = game.label("", 16)
+	game.location_label.custom_minimum_size = Vector2(140, 36)
+	game.location_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	toolbar.add_child(game.location_label)
+	game.floor_up = game.button("", func() -> void: game.village_map.change_floor(1))
+	game.floor_up.icon = load("res://assets/ui/floor_up.svg")
+	game.floor_up.tooltip_text = game.tr_text("view_floor_up")
+	toolbar.add_child(game.floor_up)
+	game.floor_down = game.button("", func() -> void: game.village_map.change_floor(-1))
+	game.floor_down.icon = load("res://assets/ui/floor_down.svg")
+	game.floor_down.tooltip_text = game.tr_text("view_floor_down")
+	toolbar.add_child(game.floor_down)
+	var map_button: Button = game.button("", func() -> void: game.village_map.open())
+	map_button.icon = load("res://assets/ui/map.svg")
+	map_button.tooltip_text = game.tr_text("village_map")
+	toolbar.add_child(map_button)
 	game.follow_button = game.button(
 		game.tr_text("follow"), func() -> void: game.view.follow = game.follow_button.button_pressed
 	)
@@ -170,6 +176,10 @@ static func build(game: Control) -> void:
 	game.queue_box = HBoxContainer.new()
 	queue_scroll.add_child(game.queue_box)
 	game.queue_panel.hide()
+	game.village_map = VillageMap.new()
+	game.village_map.game = game
+	game.add_child(game.village_map)
+	game.village_map.refresh_location()
 
 
 static func layout(game: Control) -> void:

@@ -10,6 +10,8 @@ static func run(game: Control, checks: Dictionary) -> void:
 	var saved_ops: Dictionary = game.pending_operations.duplicate(true)
 	var before := saved_sim.state.duplicate(true)
 	var old_size: Vector2 = game.size
+	var old_place: int = game.view.place
+	var old_follow: bool = game.view.follow
 	game.size = Vector2(1280, 800)
 	game.responsive_layout()
 	checks.bottom_docks_do_not_overlap = (
@@ -34,7 +36,63 @@ static func run(game: Control, checks: Dictionary) -> void:
 		and game.strings.outfit_toggle in option_texts
 		and game.strings.audio_on in option_texts
 	)
+	game.village_map.view_location("place.cottage_ground")
+	checks.ground_floor_has_only_up_arrow = game.floor_up.visible and not game.floor_down.visible
+	game.floor_up.emit_signal("pressed")
+	checks.floor_up_views_upstairs = (
+		game.view.current_place().id == "place.cottage_upstairs"
+		and game.location_label.text == game.view.current_place().display_name
+		and game.floor_down.visible
+		and not game.floor_up.visible
+	)
+	game.floor_down.emit_signal("pressed")
+	checks.floor_down_views_ground = game.view.current_place().id == "place.cottage_ground"
+	game.village_map.open()
+	checks.map_has_every_location_once = game.village_map.markers.size() == 4
+	game.village_map.markers[1].emit_signal("pressed")
+	checks.map_selects_pub_and_closes = (
+		game.view.current_place().id == "place.kings_head"
+		and not game.village_map.visible
+		and not game.view.follow
+		and not game.floor_up.visible
+		and not game.floor_down.visible
+	)
+	var map_valid := true
+	for site: Dictionary in game.village_map.sites:
+		for id: String in site.floors:
+			map_valid = map_valid and not game.village_map.definition(id).is_empty()
+	checks.map_references_valid_public_places = map_valid
+	game.village_map.open()
+	var touch := InputEventScreenTouch.new()
+	touch.pressed = true
+	var shop: Dictionary = game.village_map.sites[2]
+	touch.position = (
+		Vector2(shop.position[0], shop.position[1]) * game.village_map.canvas.size - Vector2(0, 45)
+	)
+	game.village_map.click_house(touch)
+	checks.map_buildings_accept_touch = (
+		game.view.current_place().id == "place.village_shop" and not game.village_map.visible
+	)
+
+	game.size = Vector2(430, 900)
+	game.responsive_layout()
+	game.village_map.open()
+	var map_bounded := true
+	for marker: Button in game.village_map.markers:
+		map_bounded = (
+			map_bounded
+			and Rect2(Vector2.ZERO, game.village_map.canvas.size).encloses(
+				Rect2(marker.position, marker.size)
+			)
+		)
+	checks.map_markers_fit_narrow_screen = map_bounded
+	game.village_map.hide()
 	checks.hud_navigation_is_presentation_only = saved_sim.state == before
+	game.size = Vector2(1280, 800)
+	game.view.switch_place(old_place)
+	game.view.follow = old_follow
+	game.village_map.refresh_location()
+	game.responsive_layout()
 	game.simulation = VillageSimulation.create(game.content)
 	game.snapshot = game.simulation.cottage_snapshot()
 	game.previous = game.snapshot.duplicate(true)

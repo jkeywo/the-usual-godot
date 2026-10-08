@@ -1,0 +1,41 @@
+{
+  "sites": [
+    {
+      "floors": [
+        "place.cottage_ground",
+        "place.cottage_upstairs"
+      ],
+      "position": [
+        0.23,
+        0.25
+      ]
+    },
+    {
+      "floors": [
+        "place.kings_head"
+      ],
+      "position": [
+        0.78,
+        0.25
+      ]
+    },
+    {
+      "floors": [
+        "place.village_shop"
+      ],
+      "position": [
+        0.55,
+        0.74
+      ]
+    },
+    {
+      "floors": [
+        "place.lane"
+      ],
+      "position": [
+        0.29,
+        0.52
+      ]
+    }
+  ]
+}

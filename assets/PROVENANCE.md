@@ -31,3 +31,9 @@ presentation rotation. The importer only registers collars, trims, cuts alpha
 at 0.5, and samples nearest onto 48×80 cells. Prompt/source hashes and technical
 workflow: `art/README.md`. Shipped PNGs are self-contained, editable sources;
 normal development and exports require no image generation or raw boards.
+
+## Navigation icons
+
+`assets/ui/map.svg`, `floor_up.svg` and `floor_down.svg` are original project-owned
+vector UI icons authored for this port (MIT). No external artwork is used. The
+client-drawn village overview is an original schematic, not an authoritative map.

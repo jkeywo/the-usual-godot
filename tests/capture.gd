@@ -29,6 +29,8 @@ func capture() -> void:
 	game.responsive_layout()
 	if OS.get_environment("THE_USUAL_CAPTURE_MODE") == "menu":
 		game.open_menu(game.view.context_target(game.snapshot.portals[0].from), Vector2(480, 360))
+	elif OS.get_environment("THE_USUAL_CAPTURE_MODE") == "map":
+		game.village_map.open()
 	elif OS.get_environment("THE_USUAL_CAPTURE_MODE") == "details":
 		game.details.show()
 	elif OS.get_environment("THE_USUAL_CAPTURE_MODE") == "orders":

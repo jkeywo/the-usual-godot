@@ -106,4 +106,10 @@ The village continues to fill the viewport under every panel.
 `HouseholdHud` owns construction and responsive placement; `InteractionMenu` owns
 context layout and delegates action submission to the existing typed command path.
 Thirteen HUD checks cover tabs, screen bounds, queue cancellation, retained controls
-and the simulation boundary, bringing client acceptance to 73 checks.
+and the simulation boundary, bringing client acceptance to 81 checks.
+
+Location navigation uses a current-place label and applicable floor arrows. The
+folded-map icon opens an original clickable schematic of the cottage, pub, shop
+and lane. Buildings and labels support mouse/touch selection; labels also support
+keyboard focus. Floor grouping and marker positions are authored in
+`content/navigation.json`. Eight navigation checks bring client acceptance to 81.

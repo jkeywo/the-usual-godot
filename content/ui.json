@@ -125,5 +125,8 @@
   "options": "Menu",
   "close_menu": "Close",
   "time_controls": "Time",
-  "live_mode": "Village life"
+  "live_mode": "Village life",
+  "village_map": "Village map",
+  "view_floor_up": "View floor above",
+  "view_floor_down": "View floor below"
 }
