@@ -79,15 +79,29 @@ func set_snapshot(current: Dictionary, old: Dictionary) -> void:
 								),
 								facing.get(listener.id, 2)
 							)
-	if follow:
-		for resident: Dictionary in snapshot.residents:
-			if resident.id == selected:
-				if place != resident.position.place:
-					place = resident.position.place
-					pan = Vector2.ZERO
-				pan = size * 0.5 - base_origin() - world_position(resident.position)
+	update_follow()
 	constrain_pan()
 	queue_redraw()
+
+
+func interpolated_world_position(resident: Dictionary) -> Vector2:
+	var point := world_position(resident.position)
+	for prior: Dictionary in previous.get("residents", []):
+		if prior.id == resident.id and prior.position.place == resident.position.place:
+			return world_position(prior.position).lerp(point, alpha)
+	return point
+
+
+func update_follow() -> void:
+	if not follow:
+		return
+	for resident: Dictionary in snapshot.get("residents", []):
+		if resident.id == selected:
+			if place != resident.position.place:
+				place = resident.position.place
+			pan = size * 0.5 - base_origin() - interpolated_world_position(resident)
+			constrain_pan()
+			return
 
 
 func current_place() -> Dictionary:
@@ -217,7 +231,7 @@ func _draw() -> void:
 			for old: Dictionary in previous.get("residents", []):
 				if old.id == value.id and old.position.place == place:
 					moving = old.position != value.position
-					point = screen_position(old.position).lerp(point, alpha).round()
+			point = (base_origin() + pan + interpolated_world_position(value)).round()
 			if value.id == selected:
 				draw_arc(
 					point + Vector2(0, 8) * zoom_level,
@@ -252,6 +266,11 @@ func interact(point: Vector2, primary: bool) -> bool:
 	var tile := tile_at(point)
 	if tile.is_empty():
 		return false
+	if not primary:
+		var crossing := context_target(tile)
+		if crossing.has("destination"):
+			target_requested.emit(crossing, global_position + point)
+			return true
 	for resident: Dictionary in snapshot.residents:
 		if resident.position.place != place:
 			continue
@@ -270,16 +289,13 @@ func interact(point: Vector2, primary: bool) -> bool:
 	var target: Dictionary = context_target(tile)
 	if not target.is_empty():
 		target_requested.emit(target, global_position + point)
-		return true
-	move_requested.emit(tile)
+	else:
+		move_requested.emit(tile)
 
 	return true
 
 
 func context_target(tile: Dictionary) -> Dictionary:
-	for object: Dictionary in snapshot.get("objects", []):
-		if object.position == tile and not object.affordances.is_empty():
-			return object.duplicate(true)
 	for portal: Dictionary in snapshot.get("portals", []):
 		if tile == portal.from or tile == portal.to:
 			var from_side: bool = tile == portal.from
@@ -295,6 +311,9 @@ func context_target(tile: Dictionary) -> Dictionary:
 					}
 				]
 			}
+	for object: Dictionary in snapshot.get("objects", []):
+		if object.position == tile and not object.affordances.is_empty():
+			return object.duplicate(true)
 	return {}
 
 

@@ -46,14 +46,10 @@
       "outfit": "neighbour"
     }
   },
-  "bob": [
-    0,
-    1,
-    0,
-    -1,
-    0,
-    1,
-    0,
-    -1
+  "art_style": "observational-pixels",
+  "format": "png",
+  "head_anchor": [
+    24,
+    20
   ]
 }

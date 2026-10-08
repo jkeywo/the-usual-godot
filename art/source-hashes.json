@@ -1,0 +1,16 @@
+{
+  "gestures_landlord.png": "8be120ca1e7036881313a4afee34fbb789ec0badfeca1d451cfee0ba6c8e02ef",
+  "gestures_navy.png": "07e6a3a5626190e54a750d92c9d033f4da570c8a9334ba8d3c3cec981fcd48e9",
+  "gestures_neighbour.png": "bca2002ef61fa2017f4ff6f242cd807e741944975507d7804fc11b5fbd5fd79a",
+  "gestures_ochre.png": "d87e48eb4629863b652ebc68dd828382d3e6c47bf2a489be22ccfee910e3df41",
+  "gestures_sage.png": "6452798a7ec6ae3cb732c3af447db2b8109f69d97d7e5a7ba0ebc7620ee64de5",
+  "heads.png": "98de785a7f330d0144de63462744819c6078a19f91650e5dd13196b957a64e57",
+  "heads_blink.png": "67831cc27aada2ddd28b57f824100656899f237c85fb75f1173f06fcd5b9a774",
+  "heads_talk.png": "31fb5c57eb2437f03d80379841402fe50f1e7e84e29d469258975ed49b3ed8e0",
+  "seated.png": "65162088add3b3ea94ffd7eb4b041baae47af53b232a7a45cd551829f9b3c7a0",
+  "walk_landlord.png": "09cdfc8c9c64e4caba4e1fd6a0a4e8acf2f80b0a7ea53f2833406724e844a638",
+  "walk_navy.png": "cd7ae5b360ba0e962288a84a2d5dcf9bad9de3e9986da0114d3d4d0ceab9e206",
+  "walk_neighbour.png": "aea0e533fd5baea24d4ea5227d80cfc6dd8f2ff8528a07352bf1788649a7b2ce",
+  "walk_ochre.png": "b3c4fec320a5b1ddca86e5023df6b10e9c51cd242bee0ab761ec29104f157957",
+  "walk_sage.png": "d971148e2da3f8a10e11dc421de97e753e14715e5c65924869605742b90f5122"
+}

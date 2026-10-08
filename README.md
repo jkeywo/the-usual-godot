@@ -11,7 +11,7 @@ whose presence matters. Native GDScript port of
 
 Open `project.godot` in **Godot 4.7.2**, standard edition. No Rust runtime,
 GDExtension, or source asset purchase is required. Content is authored as Godot
-text resources. The original replacement SVG artwork is included under MIT;
+text resources. The original replacement raster character and SVG environment artwork is included under MIT;
 the font and retained source sounds are CC0. New animated poses and synthesized
 audio are original project assets (see `assets/PROVENANCE.md`).
 
@@ -57,7 +57,7 @@ uv sync --frozen --group dev
 uv run python tools/setup_godot.py
 ```
 
-All 540 simulation checks and 52 client checks run on Windows and in the
+All 540 simulation checks and 60 client checks run on Windows and in the
 exported browser build, including twelve additional 600-tick Rust reference
 runs across six seeds and 300 authoritative checkpoints. CI also verifies
 browser persistence after reload and audio after user interaction, and captures

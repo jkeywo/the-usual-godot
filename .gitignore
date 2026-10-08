@@ -5,3 +5,6 @@
 __pycache__/
 build/
 *.tmp
+
+art/source/*.png
+art/source/*.import

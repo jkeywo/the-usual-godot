@@ -13,7 +13,7 @@ The acceptance suite maps all 84 baseline simulation behavior tests, compares
 three independent Rust event traces and eight authoritative state checkpoints,
 and checks unsigned mixer vectors. The state comparisons include positions,
 needs, navigation paths, plans, active uses, stocks, claims and pending events.
-There are 540 simulation checks and 52 client checks, including 75 save/resume
+There are 540 simulation checks and 60 client checks, including 75 save/resume
 checkpoints for movement, contention, cooking, urgent preemption and initiatives.
 An additional independent matrix runs autonomous and scripted scenarios for 600
 ticks at each of six seeds (0, 1, 42, 4243, i64::MAX and u64::MAX). All twelve
@@ -71,8 +71,8 @@ All four authored residents now use separate head and clothing/body atlases.
 Each outfit has eight-direction walks (eight frames), conversation gestures
 (six frames), and generic interaction loops (six frames), alongside idle,
 seated and sleeping poses. Cells are 48 by 80 logical pixels; head and body use
-one shared attachment coordinate and per-frame bob. Clothing variants reuse
-geometry and frame order with skin-matched hand palettes. The client chooses
+one shared collar attachment coordinate. Clothing variants reuse
+frame order and retain the separate character identity. The client chooses
 frames, facing and clothes; it never alters authoritative simulation state.
 
 Snapshots expose only the position of an object currently being used as
@@ -81,8 +81,14 @@ conversation gestures without revealing an outsider's needs or future plans.
 Outfit choices are cosmetic client state and are not stored in simulation saves.
 The toolbar switches a selected resident between the original and navy outfit.
 
-Regenerate with `python tools/generate_characters.py`. Runtime SVG atlases are
-original code-authored pixel art, rather than slices of the approximate concept
-boards. `tests/animation_gallery.gd` renders every current resident and direction;
+The rejected procedural SVG character artwork is replaced with generated raster art
+based directly on C — Observational Pixels. See `art/README.md` for prompts,
+provenance and optional technical reimport. Shipped PNGs need no generator.
+`tests/animation_gallery.gd` renders every current resident and direction;
 `tests/animation_tests.gd` checks assets, distinct poses, head compatibility,
 facing, conversation, detached targets and the simulation boundary.
+
+Camera follow uses the rendered interpolated position each frame. Manual portal
+orders switch the selected resident's view on arrival even when follow is off,
+and an occupied stair tile retains its crossing menu. `tests/camera_portal_tests.gd`
+checks both floor directions and fractional-tick follow without sim mutations.

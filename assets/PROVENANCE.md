@@ -19,12 +19,15 @@ this project. No recordings, samples, melodies or third-party sprite frames
 were used. Room/outdoor tones are quiet loops; cue playback starts only after
 user interaction and can be muted.
 
-`characters/*.svg`: original integer-grid vector pixel artwork and modular
-animation atlases authored for this project, generated reproducibly by
-`tools/generate_characters.py`; released under the repository MIT license.
-These contain no third-party sprite data or raster samples. The AI-generated
-boards in `docs/art/` are exploratory references only and are excluded from
-exports. Runtime atlases have independent head layers and shared clothing/body
-geometry, with hand colours generated per skin palette. Four residents and five
-outfits each support eight directions, eight walk frames, six talking gestures
-and six interaction poses, plus idle, seated and sleeping states.
+`characters/*.png`: project-original raster pixel art generated with the built-in
+imagegen tool on 2026-10-08, based on this project's C — Observational Pixels
+concept, replacing the rejected procedural SVG character art. No third-party
+character or furniture packs were used. Licensed with the project under MIT.
+Four separately drawn eight-direction heads attach to five interchangeable
+outfits; each has an eight-frame directional walk and six talking/interaction
+gestures. Front and rear gesture views are shared and mirrored; heads retain
+all eight directions. Idle uses the legs-together walking pose; sleeping is a
+presentation rotation. The importer only registers collars, trims, cuts alpha
+at 0.5, and samples nearest onto 48×80 cells. Prompt/source hashes and technical
+workflow: `art/README.md`. Shipped PNGs are self-contained, editable sources;
+normal development and exports require no image generation or raw boards.

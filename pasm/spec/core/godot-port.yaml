@@ -70,9 +70,21 @@ entities:
       title: Split character heads and animated outfits
       summary: "User-authorized eight-direction walking, gesticulating conversation and generic interaction animations for every current resident, using separate head and outfit layers."
       rationale:
-        - "[ai] Reproducible integer-grid SVG atlases replace approximate generated concept sheets for runtime use. Every outfit shares frame order, cell dimensions and head attachment coordinates."
+        - "[ai] The rejected procedural SVG art is superseded by imagegen raster sprites based on the C Observational Pixels reference. Technical Godot import trims alpha and registers collars with nearest sampling; it does not draw art. Every outfit shares frame order, cell dimensions and head attachment coordinates."
         - "[ai] Facing, animation time, outfit selection and conversation partner gestures are presentation state only, derived from detached observable snapshots. No simulation timing or private outsider data is exposed."
       references: [godot-household-dashboard, godot-order-management-completion, authoritative-client-projection]
     implementation:
       status: declared
-      paths: [client/character_animation.gd, client/village_view.gd, tools/generate_characters.py, assets/characters, tests/animation_tests.gd]
+      paths: [client/character_animation.gd, client/village_view.gd, tools/import_character_atlases.gd, assets/characters, tests/animation_tests.gd]
+
+  - decision: godot-continuous-follow-and-manual-crossings
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Continuous camera follow and visible manual floor crossings
+      summary: "User-requested fixes for jerky camera follow and manual stairs. Follow centres on the same interpolated position used to render the selected resident. A completed manual portal order switches the view to its destination even with follow disabled; the portal tile keeps its action when occupied."
+      rationale: ["[ai] Floor focus and interpolation remain presentation state. Navigation, contention and tick ordering retain their parity behavior."]
+      references: [village-client, tile-navigation, godot-modular-character-animation]
+    implementation:
+      status: declared
+      paths: [client/main.gd, client/village_view.gd, tests/camera_portal_tests.gd]

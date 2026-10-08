@@ -180,6 +180,7 @@ static func run(game: Control) -> Dictionary:
 	game.select_resident(1)
 	game.view.set_snapshot(game.snapshot, game.previous)
 	AnimationTests.run(game, checks)
+	CameraPortalTests.run(game, checks)
 	var failed: Array[String] = []
 	for name: String in checks:
 		if not checks[name]:

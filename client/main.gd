@@ -44,6 +44,7 @@ var audio: VillageAudio
 var audio_button: Button
 var footstep_timer: float = 0.0
 var cancelled_work: Dictionary = {}
+var pending_crossings: Dictionary = {}
 
 
 func tr_text(key: String) -> String:
@@ -380,9 +381,11 @@ func _process(delta: float) -> void:
 		consumed += 1
 	if consumed > 0:
 		view.set_snapshot(snapshot, previous)
+		update_crossing_focus()
 		refresh_ui()
 		consume_feedback()
 	view.alpha = clampf(accumulator / 0.25, 0, 1)
+	view.update_follow()
 	view.queue_redraw()
 	var direction := Vector2.ZERO
 	if Input.is_physical_key_pressed(KEY_LEFT) or Input.is_physical_key_pressed(KEY_A):
@@ -600,6 +603,9 @@ func menu_action(index: int) -> void:
 	if index < 0 or index >= menu_target.affordances.size():
 		return
 	if menu_target.has("destination"):
+		pending_crossings[next_task] = {
+			"resident": selected, "destination": menu_target.destination.duplicate(true)
+		}
 		queue_move(menu_target.destination)
 		return
 	submit_order(
@@ -611,6 +617,20 @@ func menu_action(index: int) -> void:
 	next_task += 1
 	receipt.text = tr_text("pending")
 	click_sound()
+
+
+func update_crossing_focus() -> void:
+	for task: int in pending_crossings.keys():
+		var crossing: Dictionary = pending_crossings[task]
+		for resident: Dictionary in snapshot.residents:
+			if resident.id == crossing.resident and resident.position == crossing.destination:
+				if selected == resident.id:
+					if view.follow:
+						view.update_follow()
+					else:
+						view.switch_place(resident.position.place)
+				pending_crossings.erase(task)
+				break
 
 
 func action_name(object: String, affordance: String) -> String:
@@ -642,6 +662,8 @@ func consume_feedback() -> void:
 			)
 			audio.play("accept")
 			continue
+		if event.kind in ["PlayerCommandRejected", "TaskCancelled", "GoToCancelled"]:
+			pending_crossings.erase(event.data.get("task", 0))
 		if event.kind == "PlayerCommandRejected":
 			var operations: Array = pending_operations.get(event.data.task, [])
 			if not operations.is_empty():
@@ -699,6 +721,7 @@ func load_evening() -> void:
 		receipt.text = tr_text("load_failed")
 		return
 	simulation = restored
+	pending_crossings.clear()
 	snapshot = simulation.developer_snapshot() if developer else simulation.cottage_snapshot()
 	previous = snapshot.duplicate(true)
 	accumulator = 0
