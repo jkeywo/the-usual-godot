@@ -20,7 +20,10 @@ authored actions, or bare ground to queue a walk. Drag to pan; wheel/+/- to zoom
 The floating dashboard shows needs, queued orders, memories and village news.
 Use Next to promote a waiting order, Do now to interrupt current work, Up/Down
 to reorder, or Cancel. Urgent needs still take precedence. Sound begins after
-interaction and can be muted with the toolbar.
+interaction and can be muted with the toolbar. Change clothes swaps the selected
+resident between their original outfit and the shared navy outfit. Characters use
+separate heads and outfits, eight-direction walks, conversation gestures and
+interaction animations.
 Space pauses; 1/2 or Tab select residents; F toggles follow; brackets change
 place; F3 toggles the developer view; F5/F9 save/load. Touch supports tap and drag.
 Save/load buttons work in browsers where function keys are reserved.
@@ -54,7 +57,7 @@ uv sync --frozen --group dev
 uv run python tools/setup_godot.py
 ```
 
-All 540 simulation checks and 42 client checks run on Windows and in the
+All 540 simulation checks and 52 client checks run on Windows and in the
 exported browser build, including twelve additional 600-tick Rust reference
 runs across six seeds and 300 authoritative checkpoints. CI also verifies
 browser persistence after reload and audio after user interaction, and captures

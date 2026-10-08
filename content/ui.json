@@ -26,8 +26,8 @@
   "follow": "Follow",
   "details_toggle": "Details",
   "feed_toggle": "Village news",
-  "help": "Left-click to select · Right-click for actions · Drag to pan · Wheel to zoom",
-  "touch_help": "Tap a person to select · Tap a fixture for actions · Drag to pan",
+  "help": "Left-click to select \u00c2\u00b7 Right-click for actions \u00c2\u00b7 Drag to pan \u00c2\u00b7 Wheel to zoom",
+  "touch_help": "Tap a person to select \u00c2\u00b7 Tap a fixture for actions \u00c2\u00b7 Drag to pan",
   "idle": "Taking a moment",
   "developer": "Developer view",
   "clock": "%02d:%02d",
@@ -45,7 +45,7 @@
   "portrait_hint": "Select and follow",
   "new_evening": "A new evening begins.",
   "audio": "Sound",
-  "initializing": "Opening the village…",
+  "initializing": "Opening the village\u00e2\u20ac\u00a6",
   "content_error": "The village could not be opened. Check the content report.",
   "need_labels": {
     "Hunger": "Hunger",
@@ -63,8 +63,8 @@
     "Cancelled": "Cancelled"
   },
   "perceptions": {
-    "TookPargeterSeat": "Sat in Mr Pargeter’s seat. Noticed the silence.",
-    "WitnessedPargeterSeat": "Saw someone take Mr Pargeter’s seat."
+    "TookPargeterSeat": "Sat in Mr Pargeter\u00e2\u20ac\u2122s seat. Noticed the silence.",
+    "WitnessedPargeterSeat": "Saw someone take Mr Pargeter\u00e2\u20ac\u2122s seat."
   },
   "events": {
     "GoToArrived": "{name} arrived.",
@@ -117,5 +117,6 @@
   },
   "queued_cancelled": "{name}: that waiting order was removed from the queue.",
   "no_selection": "Select a household member",
-  "outsider_card": "Their private affairs are their own."
+  "outsider_card": "Their private affairs are their own.",
+  "outfit_toggle": "Change clothes"
 }

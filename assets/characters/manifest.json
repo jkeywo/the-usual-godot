@@ -1,0 +1,59 @@
+{
+  "cell": [
+    48,
+    80
+  ],
+  "directions": [
+    "east",
+    "southeast",
+    "south",
+    "southwest",
+    "west",
+    "northwest",
+    "north",
+    "northeast"
+  ],
+  "clips": {
+    "idle": 1,
+    "walk": 8,
+    "talk": 6,
+    "interact": 6,
+    "sit": 1,
+    "sleep": 1
+  },
+  "outfits": [
+    "sage",
+    "ochre",
+    "landlord",
+    "neighbour",
+    "navy"
+  ],
+  "characters": {
+    "person.newcomer_a": {
+      "head": 1,
+      "outfit": "sage"
+    },
+    "person.newcomer_b": {
+      "head": 2,
+      "outfit": "ochre"
+    },
+    "person.landlord": {
+      "head": 3,
+      "outfit": "landlord"
+    },
+    "person.neighbour": {
+      "head": 4,
+      "outfit": "neighbour"
+    }
+  },
+  "bob": [
+    0,
+    1,
+    0,
+    -1,
+    0,
+    1,
+    0,
+    -1
+  ]
+}

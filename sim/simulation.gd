@@ -1307,6 +1307,10 @@ func project(developer: bool) -> Dictionary:
 			"activity":
 			"walking" if state.walks.has(who) else state.uses.get(who, {}).get("affordance", "idle")
 		}
+		var use: Dictionary = state.uses.get(who, {})
+		view.activity_target = (
+			objects[use.object].position.duplicate() if not use.is_empty() else {}
+		)
 		if r.household or developer:
 			var tasks: Array = state.queues.get(who, []).duplicate(true)
 			for task: Dictionary in tasks:

@@ -230,6 +230,7 @@ func build_ui() -> void:
 	toolbar.add_child(
 		button(tr_text("feed_toggle"), func() -> void: feed_panel.visible = not feed_panel.visible)
 	)
+	toolbar.add_child(button(tr_text("outfit_toggle"), change_outfit))
 	audio_button = button(tr_text("audio_on"), toggle_audio)
 	toolbar.add_child(audio_button)
 	hover_label = label(tr_text("day"), 14, Color("b8c0ab"))
@@ -271,7 +272,7 @@ func build_ui() -> void:
 		if not resident.household:
 			continue
 		var portrait := button(resident.display_name, select_and_follow.bind(resident.id))
-		portrait.icon = load("res://assets/original/resident_%d.svg" % resident.id)
+		portrait.icon = view.characters.portrait(resident.definition_id)
 		portrait.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		portrait.expand_icon = true
 		portrait.add_theme_constant_override("icon_max_width", 32)
@@ -755,3 +756,14 @@ func manage_order(task: int, operation: VillageCommand.Kind, index: int) -> void
 		feedback = "force_accepted"
 	submit_order(VillageCommand.manage(task, operation, index), feedback)
 	receipt.text = tr_text("pending")
+
+
+func change_outfit() -> void:
+	for resident: Dictionary in snapshot.residents:
+		if resident.id == selected:
+			var original: String = CharacterAnimation.PEOPLE.get(resident.definition_id, {}).get(
+				"outfit", "sage"
+			)
+			var current: String = view.outfits.get(selected, original)
+			view.change_outfit(selected, original if current == "navy" else "navy")
+			return

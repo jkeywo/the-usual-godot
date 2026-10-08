@@ -21,18 +21,15 @@ var textures: Dictionary = {}
 var fingers: Dictionary = {}
 var animation_time: float = 0.0
 var facing: Dictionary = {}
+var outfits: Dictionary = {}
+var characters := CharacterAnimation.new()
+var talking_to: Dictionary = {}
 
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	clip_contents = true
 	resized.connect(constrain_pan)
-	for i: int in range(1, 5):
-		textures["resident_" + str(i)] = load("res://assets/original/resident_%d.svg" % i)
-		for pose: String in ["walk0", "walk1", "work0", "work1", "sit", "sleep", "blink"]:
-			textures["resident_%d_%s" % [i, pose]] = load(
-				"res://assets/original/resident_%d_%s.svg" % [i, pose]
-			)
 	for key: String in [
 		"toilet",
 		"sink",
@@ -54,6 +51,34 @@ func _ready() -> void:
 func set_snapshot(current: Dictionary, old: Dictionary) -> void:
 	snapshot = current
 	previous = old
+	talking_to.clear()
+	for resident: Dictionary in snapshot.residents:
+		for prior: Dictionary in previous.get("residents", []):
+			if prior.id == resident.id and prior.position.place == resident.position.place:
+				facing[resident.id] = CharacterAnimation.direction(
+					Vector2(
+						resident.position.x - prior.position.x,
+						prior.position.y - resident.position.y
+					),
+					facing.get(resident.id, 2)
+				)
+		var target: Dictionary = resident.get("activity_target", {})
+		if not target.is_empty() and target.place == resident.position.place:
+			facing[resident.id] = CharacterAnimation.direction(
+				Vector2(target.x - resident.position.x, resident.position.y - target.y),
+				facing.get(resident.id, 2)
+			)
+			if CharacterAnimation.clip(resident.get("activity", "idle")) == "talk":
+				for listener: Dictionary in snapshot.residents:
+					if listener.position == target and listener.id != resident.id:
+						talking_to[listener.id] = resident.position.duplicate()
+						if listener.get("activity", "idle") == "idle":
+							facing[listener.id] = CharacterAnimation.direction(
+								Vector2(
+									resident.position.x - target.x, target.y - resident.position.y
+								),
+								facing.get(listener.id, 2)
+							)
 	if follow:
 		for resident: Dictionary in snapshot.residents:
 			if resident.id == selected:
@@ -192,8 +217,6 @@ func _draw() -> void:
 			for old: Dictionary in previous.get("residents", []):
 				if old.id == value.id and old.position.place == place:
 					moving = old.position != value.position
-					if old.position.x != value.position.x:
-						facing[value.id] = -1 if old.position.x > value.position.x else 1
 					point = screen_position(old.position).lerp(point, alpha).round()
 			if value.id == selected:
 				draw_arc(
@@ -206,33 +229,23 @@ func _draw() -> void:
 					2 * zoom_level
 				)
 			var activity: String = value.get("activity", "idle")
-			var pose: String = animation_pose(activity, animation_time + value.id * 0.17)
-			if moving:
-				pose = "walk" + str(int(animation_time * 7) % 2)
-			var key: String = (
-				"resident_" + str(value.id) + ("_" + pose if not pose.is_empty() else "")
+			if activity == "idle" and talking_to.has(value.id):
+				activity = "affordance.talk"
+			var clip_name := "walk" if moving else CharacterAnimation.clip(activity)
+			var layers := characters.layers(
+				value.definition_id,
+				outfits.get(value.id, ""),
+				facing.get(value.id, 2),
+				clip_name,
+				animation_time + value.id * 0.17
 			)
-			var bob: float = 1.0 if moving and int(animation_time * 7) % 2 == 0 else 0.0
-			var rotation: float = -PI / 2 if pose == "sleep" else 0.0
-			draw_set_transform(point, rotation, Vector2(facing.get(value.id, 1), 1))
-			draw_texture_rect(
-				textures[key],
-				Rect2(-Vector2(32, 78 + bob) * zoom_level, Vector2(64, 96) * zoom_level),
-				false
-			)
+			var rotation: float = -PI / 2 if clip_name == "sleep" else 0.0
+			draw_set_transform(point, rotation)
+			var rect := Rect2(-Vector2(24, 66) * zoom_level, CharacterAnimation.CELL * zoom_level)
+			draw_texture_rect_region(layers.body, rect, layers.body_rect)
+			rect.position += layers.head_offset * zoom_level
+			draw_texture_rect_region(layers.head, rect, layers.head_rect)
 			draw_set_transform(Vector2.ZERO)
-
-
-static func animation_pose(activity: String, elapsed: float) -> String:
-	if activity == "walking":
-		return "walk" + str(int(elapsed * 7) % 2)
-	if "sleep" in activity:
-		return "sleep"
-	if "sit" in activity or "seat" in activity:
-		return "sit"
-	if activity != "idle":
-		return "work" + str(int(elapsed * 3) % 2)
-	return "blink" if fmod(elapsed, 4.0) < 0.15 else ""
 
 
 func interact(point: Vector2, primary: bool) -> bool:
@@ -340,3 +353,9 @@ func _gui_input(event: InputEvent) -> void:
 		fingers[event.index] = event.position
 		constrain_pan()
 	accept_event()
+
+
+func change_outfit(resident: int, outfit: String) -> void:
+	if outfit in CharacterAnimation.OUTFITS:
+		outfits[resident] = outfit
+		queue_redraw()

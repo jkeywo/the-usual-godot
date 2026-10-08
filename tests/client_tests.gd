@@ -76,11 +76,11 @@ static func run(game: Control) -> Dictionary:
 	var state_before_animation: Dictionary = game.simulation.state.duplicate(true)
 	game.view.animation_time += 4.5
 	checks.walking_has_alternating_frames = (
-		VillageView.animation_pose("walking", 0.0) != VillageView.animation_pose("walking", 0.2)
+		CharacterAnimation.frame("walk", 0.0) != CharacterAnimation.frame("walk", 0.2)
 	)
 	checks.using_has_activity_pose = (
-		VillageView.animation_pose("affordance.sleep", 0.0) == "sleep"
-		and VillageView.animation_pose("affordance.sit_down", 0.0) == "sit"
+		CharacterAnimation.clip("affordance.sleep") == "sleep"
+		and CharacterAnimation.clip("affordance.sit_down") == "sit"
 	)
 	checks.animation_does_not_change_simulation = state_before_animation == game.simulation.state
 	checks.feedback_audio_assets_loaded = game.audio.players.size() == 7
@@ -139,7 +139,8 @@ static func run(game: Control) -> Dictionary:
 		and game.view.textures.seat != game.view.textures.toilet
 	)
 	checks.original_animation_frames_loaded = (
-		game.view.textures.has("resident_1_walk0") and game.view.textures.has("resident_4_sleep")
+		game.view.characters.portrait("person.newcomer_a").atlas != null
+		and game.view.characters.layers("person.neighbour", "", 2, "sleep", 0.0).body != null
 	)
 	for target_object: Dictionary in game.snapshot.objects:
 		if target_object.id == "object.kings_head_bar":
@@ -178,6 +179,7 @@ static func run(game: Control) -> Dictionary:
 	)
 	game.select_resident(1)
 	game.view.set_snapshot(game.snapshot, game.previous)
+	AnimationTests.run(game, checks)
 	var failed: Array[String] = []
 	for name: String in checks:
 		if not checks[name]:

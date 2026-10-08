@@ -62,3 +62,17 @@ entities:
     implementation:
       status: declared
       paths: [sim/command.gd, sim/simulation.gd, client/main.gd, client/village_view.gd, tests/order_tests.gd, tests/differential_tests.gd]
+
+  - decision: godot-modular-character-animation
+    core:
+      status: accepted
+      confidence: confirmed
+      title: Split character heads and animated outfits
+      summary: "User-authorized eight-direction walking, gesticulating conversation and generic interaction animations for every current resident, using separate head and outfit layers."
+      rationale:
+        - "[ai] Reproducible integer-grid SVG atlases replace approximate generated concept sheets for runtime use. Every outfit shares frame order, cell dimensions and head attachment coordinates."
+        - "[ai] Facing, animation time, outfit selection and conversation partner gestures are presentation state only, derived from detached observable snapshots. No simulation timing or private outsider data is exposed."
+      references: [godot-household-dashboard, godot-order-management-completion, authoritative-client-projection]
+    implementation:
+      status: declared
+      paths: [client/character_animation.gd, client/village_view.gd, tools/generate_characters.py, assets/characters, tests/animation_tests.gd]
